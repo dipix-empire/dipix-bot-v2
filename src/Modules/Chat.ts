@@ -10,7 +10,7 @@ export default new Module(
 		return [ 
 			new DiscordEvent("messageCreate", (msg: Message) => {
 				if (msg.channel.id != app.config.bot.channels.chatIntagration) return
-				//TODO: send message via servertap
+				
 			}),
 			new ServertapEvent("newline", async (line: string) => {
 				if (!line.startsWith(app.config.servertap.chat.globalPrefix)) return

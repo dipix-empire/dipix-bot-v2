@@ -15,4 +15,9 @@ export default interface Config {
 			ws: string
 		}
 	}
+	modules: {
+		chat: {
+			minecraftSendPattern: (user: string, message: string) => string
+		}
+	}
 }

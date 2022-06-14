@@ -18,7 +18,12 @@ export default {
 			globalPrefix: "[GC]"
 		},
 		uri: {
-			ws: "ws://localhost:4567"
+			ws: "ws://localhost:4567/v1/ws/console"
+		}
+	},
+	modules: {
+		chat: {
+			minecraftSendPattern: (user, message) => `[DC] ${user} >> ${message}`
 		}
 	}
 } as Config
