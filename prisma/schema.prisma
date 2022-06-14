@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  nickname  String
+  age       Int
+  discord   String
+  status    UserStatus
+  request   Request    @relation(fields: [requestId], references: [id])
+  requestId String     @unique
+  promo     String?
+}
+
+model Request {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  thread String
+  fields String[]
+  user   User[]
+}
+
+enum UserStatus {
+  payed
+  waitingForPays
+}
