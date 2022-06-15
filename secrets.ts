@@ -1,4 +1,6 @@
+import { config } from "dotenv";
 import Secrets from "./src/types/Secrets";
+config()
 
 export default {
 	discord_token: process.env.DISCORD_TOKEN || "",

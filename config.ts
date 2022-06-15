@@ -4,7 +4,11 @@ import Discord from "discord.js"
 export default {
 	bot: {
 		channels: {
-			chatIntagration: "986284398347419728"
+			chatIntagration: "986284398347419728",
+			consoleIntegration: ""
+		},
+		roles: {
+
 		},
 		intents: [
 			Discord.Intents.FLAGS.GUILDS,
@@ -25,5 +29,8 @@ export default {
 		chat: {
 			minecraftSendPattern: (user, message) => `[DC] ${user} >> ${message}`
 		}
+	},
+	bus: {
+		messageTimeout: 10 * 1_000
 	}
 } as Config

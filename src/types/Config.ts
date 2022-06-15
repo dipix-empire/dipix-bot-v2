@@ -19,5 +19,8 @@ export default interface Config {
 		chat: {
 			minecraftSendPattern: (user: string, message: string) => string
 		}
+	},
+	bus: {
+		messageTimeout: number
 	}
 }

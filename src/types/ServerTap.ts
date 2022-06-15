@@ -10,12 +10,12 @@ export default class ServerTap extends EventEmitter {
 		this.ws?.send(message)
 	}
 
-	private restart() {
+	private reconnect() {
 		if (this.lastTimeout <= 30_000) 
 			this.lastTimeout += 5_000
-		setTimeout(this.mainloop, this.lastTimeout)
+		setTimeout(this.connect, this.lastTimeout)
 	}
-	private async mainloop() {
+	private connect() {
 		try {
 			this.ws = new WebSocket(this.wsuri, [], {
 				headers: {
@@ -26,12 +26,16 @@ export default class ServerTap extends EventEmitter {
 				this.lastTimeout = 0
 				console.log("Connected to server via servertap:ws")
 			})
-			this.on("message", (msg: string) => {
+			this.ws.on("message", (msg: string) => {
 				let data = JSON.parse(msg) as newLineData
 				this.emit("newline", data)
 			})
+			this.ws.on('error', (err) => {
+				console.log(err)
+			})
 		} catch(err) {
-			this.restart()
+			console.log(err)
+			this.reconnect()
 		}
 	}
 
@@ -39,7 +43,7 @@ export default class ServerTap extends EventEmitter {
 		super()
 		this.token = token
 		this.wsuri = wsuri
-		this.mainloop()
+		this.connect()
 	}
 }
 

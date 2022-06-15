@@ -1,4 +1,6 @@
 import Discord from "discord.js"	
+import AppBusMain from "./types/AppBus/Main"
+import AppBusModuleComponent from "./types/AppBus/ModuleComponent"
 import Config from "./types/Config"
 import Module from "./types/Module"
 import DiscordEvent from "./types/ModuleEvent/DiscordEvent"
@@ -10,13 +12,13 @@ export default class App {
 	public readonly bot: Discord.Client
 	public readonly servertap: ServerTap
 	public readonly config: Config
+	private appBusMain: AppBusMain
 	private readonly modules: Module[]
 	private readonly secrets: Secrets
 
 	async start() {
-		this.bot.login(this.secrets.discord_token)
 		this.modules.forEach(m => {
-			m.prepare(this).forEach(e => {
+			m.prepare(this, new AppBusModuleComponent(this.appBusMain, m.name)).forEach(e => {
 				switch(e.type) {
 					case "discord":
 						let discordEvent = e as DiscordEvent
@@ -26,9 +28,11 @@ export default class App {
 						let serverTapEvent = e as ServertapEvent
 						this.servertap.on(serverTapEvent.event, serverTapEvent.listener)
 						break
+
 				}
 			})
 		})
+		this.bot.login(this.secrets.discord_token)
 	}
 	
 	constructor(config: Config, secrets: Secrets, modules: Module[]) {
@@ -39,5 +43,6 @@ export default class App {
 		this.config = config
 		this.secrets = secrets
 		this.modules = modules
+		this.appBusMain = new AppBusMain(this)
 	}
 }
