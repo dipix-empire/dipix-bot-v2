@@ -1,8 +1,10 @@
+import axios from "axios";
 import { EventEmitter } from "stream";
 import WebSocket from "ws"
-export default class ServerTap extends EventEmitter {
+export default class MinecraftServerAPI extends EventEmitter {
 	private readonly token: string
 	private readonly wsuri: string
+	private readonly httpuri: string
 	private ws: WebSocket | null = null
 	private lastTimeout: number = 0
 
@@ -17,6 +19,7 @@ export default class ServerTap extends EventEmitter {
 	}
 	private connect() {
 		try {
+			// await axios.get(a)
 			this.ws = new WebSocket(this.wsuri, [], {
 				headers: {
 					"Cookie":`x-servertap-key=${this.token}`
@@ -39,10 +42,11 @@ export default class ServerTap extends EventEmitter {
 		}
 	}
 
-	constructor(token: string, wsuri: string) {
+	constructor(token: string, wsuri: string, httpuri: string) {
 		super()
 		this.token = token
 		this.wsuri = wsuri
+		this.httpuri = httpuri
 		this.connect()
 	}
 }

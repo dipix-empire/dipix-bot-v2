@@ -17,12 +17,13 @@ export default {
 			Discord.Intents.FLAGS.DIRECT_MESSAGES,
 		]
 	},
-	servertap: {
+	minecraft_server_api: {
 		chat: {
 			globalPrefix: "[GC]"
 		},
 		uri: {
-			ws: "ws://localhost:4567/v1/ws/console"
+			ws: "ws://localhost:4567/v1/ws/console",
+			http: "http://localhost:4567/v1"
 		}
 	},
 	modules: {

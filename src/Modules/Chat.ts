@@ -1,12 +1,13 @@
 import { Message, TextChannel } from "discord.js";
 import { EventEmitter } from "stream";
 import App from "../App";
+import AppBusModuleComponent from "../types/AppBus/ModuleComponent";
 import Module from "../types/Module";
 import DiscordEvent from "../types/ModuleEvent/DiscordEvent";
 import ServertapEvent from "../types/ModuleEvent/ServertapEvent";
 
 export default new Module(
-	"chat", (app: App) => {
+	"chat", (app: App, appBusModule: AppBusModuleComponent) => {
 		return [ 
 			new DiscordEvent("messageCreate", (msg: Message) => {
 				if (msg.channel.id != app.config.bot.channels.chatIntagration) return

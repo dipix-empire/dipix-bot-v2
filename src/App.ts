@@ -6,11 +6,11 @@ import Module from "./types/Module"
 import DiscordEvent from "./types/ModuleEvent/DiscordEvent"
 import ServertapEvent from "./types/ModuleEvent/ServertapEvent"
 import Secrets from "./types/Secrets"
-import ServerTap from "./types/ServerTap"
+import MinecraftServerAPI from "./types/MinecraftServerAPI"
 
 export default class App {
 	public readonly bot: Discord.Client
-	public readonly servertap: ServerTap
+	public readonly minecraft: MinecraftServerAPI
 	public readonly config: Config
 	private appBusMain: AppBusMain
 	private readonly modules: Module[]
@@ -26,7 +26,7 @@ export default class App {
 						break
 					case "servertap":
 						let serverTapEvent = e as ServertapEvent
-						this.servertap.on(serverTapEvent.event, serverTapEvent.listener)
+						this.minecraft.on(serverTapEvent.event, serverTapEvent.listener)
 						break
 
 				}
@@ -39,7 +39,7 @@ export default class App {
 		this.bot = new Discord.Client({
 			intents: config.bot.intents
 		})
-		this.servertap = new ServerTap(secrets.servertap_token, config.servertap.uri.ws)
+		this.minecraft = new MinecraftServerAPI(secrets.servertap_token, config.minecraft_server_api.uri.ws, config.minecraft_server_api.uri.http)
 		this.config = config
 		this.secrets = secrets
 		this.modules = modules

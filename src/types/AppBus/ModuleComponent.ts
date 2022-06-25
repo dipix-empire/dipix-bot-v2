@@ -8,15 +8,8 @@ export default class AppBusModuleComponent {
 		this.appBusMain.send(this.moduleName, recipient, data)
 	}
 	public onMessage(callback: (msg: any) => any) {
-		this.appBusMain.on(this.moduleName, async (msg: any) => {
-			this.appBusMain.deleteMessage(msg.id)
-			await callback(msg)
-		})
+		this.appBusMain.on(this.moduleName, callback)
 	} 
-	public getMessages() {
-		return this.appBusMain.getMessages(this.moduleName)
-	}
-
 	constructor(appBusMain: AppBusMain, moduleName: string) {
 		this.appBusMain = appBusMain
 		this.moduleName = moduleName

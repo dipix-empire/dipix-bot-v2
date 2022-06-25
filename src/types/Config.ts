@@ -7,12 +7,13 @@ export default interface Config {
 			chatIntagration: string
 		}
 	},
-	servertap: {
+	minecraft_server_api: {
 		chat: {
 			globalPrefix: string
 		},
 		uri: {
 			ws: string
+			http: string
 		}
 	}
 	modules: {
