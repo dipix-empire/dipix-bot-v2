@@ -102,3 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Config and secrets files
+config.ts
+secrets.ts
