@@ -1,16 +1,23 @@
 import { EventEmitter } from "stream";
-import App from "../../App";
-
+import {v4} from "uuid"
+import Message from "./Message";
+import Logger from "../Logger";
 export default class AppBusMain extends EventEmitter  {
-	private messages = {} as {[key: string]: {recipient: string, data: any}}
-	private app: App
+	private logger: Logger
 	public send(sender: string, recipient: string, data: any) {
-		let messageId = `${recipient}:${Date.now()}`
-		let message = {recipient, data, id: messageId}
+		let uuid = v4()
+		let message = {
+			data, 
+			sender, 
+			uuid,
+			recipient
+		} as Message
+		this.logger.Debug(`[MESSAGE] from ${sender} to ${recipient} (uuid: ${message.uuid}); data:`, data)
 		this.emit(recipient, message)
+		return uuid
 	}
-	constructor(app: App) {
+	constructor(logger: Logger) {
 		super()
-		this.app = app
+		this.logger = logger
 	}
 }

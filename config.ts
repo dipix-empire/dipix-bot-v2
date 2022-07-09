@@ -2,14 +2,18 @@ import Config from "./src/types/Config";
 import Discord from "discord.js"
 
 export default {
+	logLevel: 4,
 	bot: {
 		channels: {
 			chatIntagration: "986284398347419728",
-			consoleIntegration: ""
+			consoleIntegration: "",
+			manageChannel: "879413198846038026"
 		},
 		roles: {
-
+			administration: "879318637524176906" 
 		},
+		guildId: "812993519177826365",
+		clientId: "986328241042239508",
 		intents: [
 			Discord.Intents.FLAGS.GUILDS,
 			Discord.Intents.FLAGS.GUILD_MESSAGES,
@@ -19,11 +23,12 @@ export default {
 	},
 	minecraft_server_api: {
 		chat: {
-			globalPrefix: "[GC]"
+			globalPrefix: "<"
 		},
-		uri: {
+		web: {
 			ws: "ws://localhost:4567/v1/ws/console",
-			http: "http://localhost:4567/v1"
+			http: "http://localhost:4567/v1",
+			port: 3000
 		}
 	},
 	modules: {
