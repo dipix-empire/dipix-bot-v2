@@ -1,12 +1,12 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { v4 } from "uuid";
-import App from "../App";
-import { ErrorEmbed, SuccesfulEmbed } from "../Data/Embeds";
-import AppBusModuleComponent from "../types/AppBus/ModuleComponent";
-import Logger from "../types/Logger";
-import Module from "../types/Module";
-import DiscordEvent from "../types/ModuleEvent/DiscordEvent";
+import App from "../../App";
+import { ErrorEmbed, SuccesfulEmbed } from "../../Data/Embeds";
+import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
+import Logger from "../../types/Logger";
+import Module from "../../types/Module";
+import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 
 export default new Module(
 	"test",
