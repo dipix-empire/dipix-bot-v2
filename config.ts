@@ -23,7 +23,7 @@ export default {
 	},
 	minecraft_server_api: {
 		chat: {
-			globalPrefix: "<"
+			globalPrefix: "!"
 		},
 		web: {
 			ws: "ws://localhost:4567/v1/ws/console",
@@ -34,9 +34,9 @@ export default {
 	modules: {
 		chat: {
 			minecraftSendPattern: (user, message) => `[DC] ${user} >> ${message}`
+		},
+		profiles: {
+			skinDirectory: process.cwd() + '/images/skins'
 		}
-	},
-	bus: {
-		messageTimeout: 10 * 1_000
 	}
 } as Config

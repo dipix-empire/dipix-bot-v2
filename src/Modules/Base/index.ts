@@ -5,5 +5,9 @@ import Join from "./Join";
 import Profiles from "./Profiles";
 
 export default [
-	Chat, Console, Join, Conversation, Profiles
+	Chat,
+	Console,
+	Join,
+	Conversation,
+	Profiles
 ]

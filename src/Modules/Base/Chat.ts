@@ -1,12 +1,12 @@
 import { Message, TextChannel } from "discord.js";
 import { EventEmitter } from "stream";
-import App from "../App";
-import { newLineData } from "../Clients/Minecraft";
-import AppBusModuleComponent from "../types/AppBus/ModuleComponent";
-import Logger from "../types/Logger";
-import Module from "../types/Module";
-import DiscordEvent from "../types/ModuleEvent/DiscordEvent";
-import ServertapEvent from "../types/ModuleEvent/MinecraftEvent";
+import App from "../../App";
+import { newLineData } from "../../Clients/Minecraft";
+import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
+import Logger from "../../types/Logger";
+import Module from "../../types/Module";
+import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
+import ServertapEvent from "../../types/ModuleEvent/MinecraftEvent";
 
 export default new Module(
 	"chat", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {

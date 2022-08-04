@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -16,13 +16,30 @@ model User {
   request   Request    @relation(fields: [requestId], references: [id])
   requestId String     @unique
   promo     String?
+  Profile   Profile[]
 }
 
 model Request {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
   message String
   fields  String
+  discord String
   user    User[]
+  locked  Boolean
+}
+
+model Autos {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  discord     String
+  whoAccepted String
+}
+
+model Profile {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  number Int
+  file   String
+  userId String @db.ObjectId
 }
 
 enum UserStatus {

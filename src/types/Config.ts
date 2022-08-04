@@ -28,6 +28,9 @@ export default interface Config {
 	modules: {
 		chat: {
 			minecraftSendPattern: (user: string, message: string) => string
+		},
+		profiles: {
+			skinDirectory: string
 		}
 	}
 }
