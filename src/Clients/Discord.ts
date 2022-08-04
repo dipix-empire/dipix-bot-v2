@@ -10,22 +10,25 @@ export default class Discord extends Client {
 	private readonly discordRest: REST
 	private readonly clientId: string
 	private readonly logger: Logger
-	private commands: Array<Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|SlashCommandSubcommandsOnlyBuilder> = []
+	private commands: {[key: string]: Array<Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|SlashCommandSubcommandsOnlyBuilder>} = {}
 	public start(guildId: string) {
 		super.once('ready', async () => {
 			this.logger.Log(`Started Discord client`)
 			this.logger.Log(`Discord username: ${this.user?.tag}`)
 			this.logger.Log(`Guild name: ${this.guilds.cache.get(guildId)} (${guildId})`)
-			await this.discordRest.put(Routes.applicationGuildCommands(this.clientId, guildId), {body: this.commands.map(cmd => cmd.toJSON())})
-			this.logger.Verbose("Uploaded commands.")
+			await this.pushCommands(guildId)
 		})
 		super.login(this.discordToken)
 	}
 	
-	public uploadCommand(slashCommand: (slashCommand: SlashCommandBuilder) => Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup"> | SlashCommandSubcommandsOnlyBuilder) {
+	public uploadCommand(guildId: string, slashCommand: (slashCommand: SlashCommandBuilder) => Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup"> | SlashCommandSubcommandsOnlyBuilder) {
 		let command = slashCommand(new SlashCommandBuilder())
-		this.commands.push(command)
-		return `Added command '${command.name}' to upload`
+		this.commands[guildId].push(command)
+		return `Added command '${command.name}' to upload (guild: ${guildId})`
+	}
+	public async pushCommands(guildId: string) {
+		await this.discordRest.put(Routes.applicationGuildCommands(this.clientId, guildId), {body: this.commands[guildId].map(cmd => cmd.toJSON())})
+		this.logger.Verbose(`Uploaded commands to guild ${super.guilds.cache.get(guildId)}`)
 	}
 
 	constructor(token:string, clientId: string, options: ClientOptions, logger: Logger) {

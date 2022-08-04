@@ -15,12 +15,12 @@ import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 export default new Module(
 	"join",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		logger.Verbose(app.bot.uploadCommand((slashCommand: SlashCommandBuilder) =>
+		logger.Verbose(app.bot.uploadCommand(app.config.bot.guildId,(slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("join")
 				.setDescription("Написать заявку для присоединения к серверу.")
 		))
-		logger.Verbose(app.bot.uploadCommand((slashCommand: SlashCommandBuilder) =>
+		logger.Verbose(app.bot.uploadCommand(app.config.bot.guildId, (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("autoaccept")
 				.setDescription("Автоматически принять заявку игрока.")

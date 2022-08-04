@@ -11,7 +11,7 @@ import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 export default new Module(
 	"test",
 	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		app.bot.uploadCommand((slashCommand: SlashCommandBuilder) =>
+		app.bot.uploadCommand(app.config.bot.guildId, (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("test")
 				.setDescription("Тест для модераторов.")
