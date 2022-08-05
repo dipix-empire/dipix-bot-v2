@@ -1,5 +1,4 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { UserStatus } from "@prisma/client";
 import { Message as DMsg, Interaction, MessageActionRow, MessageButton, MessageEmbed, TextChannel, ThreadChannel } from "discord.js";
 import { EventEmitter } from "stream";
 import { v4 } from "uuid";
@@ -133,9 +132,11 @@ export default new Module(
 								nickname: reqData[1],
 								age: parseInt(reqData[2]),
 								discord: req.discord,
-								status: UserStatus.waitingForPays,
 								requestId: req.id,
-								promo: reqData[6]
+								country: undefined,
+								lastUpdate: new Date(),
+								nextUpdate: new Date(Date.now() + 3 * 24 * 60 * 60),
+								
 							}
 						})
 						await (interaction.message as DMsg).edit({ components: [actionRow(req.id, true, true)] })
@@ -206,6 +207,13 @@ export default new Module(
 				} catch (err) {
 					logger.Error(err)
 					interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
+				}
+			}),
+			new DiscordEvent("ready", async () => {
+				try {
+					await app.prisma.request.updateMany({where:{locked: true}, data:{locked: false}})
+				} catch (err) {
+					logger.Error(err)
 				}
 			})
 		]

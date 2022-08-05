@@ -16,21 +16,24 @@ export default interface Config {
 		}
 	},
 	minecraft_server_api: {
-		chat: {
-			globalPrefix: string
-		},
 		web: {
 			ws: string
 			http: string,
 			port: number
 		}
-	}
+	},
+	rest: {
+		port: number
+	},
 	modules: {
 		chat: {
 			minecraftSendPattern: (user: string, message: string) => string
 		},
 		profiles: {
 			skinDirectory: string
+		},
+		payments: {
+			botlink: string
 		}
 	}
 }

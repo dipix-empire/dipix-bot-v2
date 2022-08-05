@@ -40,7 +40,7 @@ export default new Module(
 						)
 				)
 		))
-		app.minecraft.addRoute('/profile/skins/:id', 'get', (req: Request, res: Response) => {
+		app.rest.addRoute('/profile/skins/:id', 'get', (req: Request, res: Response) => {
 			return res.sendFile(`${app.config.modules.profiles.skinDirectory}/${req.params.id}.png`)
 		})
 		async function DownloadImageByUrl(url: string): Promise<string> {
@@ -108,7 +108,7 @@ export default new Module(
 				let profile = await app.prisma.profile.findFirst({where:{number: parseInt(msg.args), userId: user.id}})
 				if (!profile) return app.minecraft.sendToConsole(`tellraw ${msg.player} {"text":"Профиль не установлен.","color":"red"}`)
 				logger.Debug("Updating skin")
-				app.minecraft.sendToConsole(`skinsrestorer applyskin ${msg.player} http://localhost:${app.config.minecraft_server_api.web.port}/profile/skin/${profile.file} classic`)
+				app.minecraft.sendToConsole(`skinsrestorer applyskin ${msg.player} http://localhost:${app.config.rest.port}/profile/skin/${profile.file} classic`)
 				logger.Debug("Notify user")
 				app.minecraft.sendToConsole(`tellraw ${msg.player} [{"text":"Профиль переключён на ","color":"green"},{"text":"${msg.args}","color":"aqua"}]`)
 			}),

@@ -10,7 +10,7 @@ export default {
 			manageChannel: "879413198846038026"
 		},
 		roles: {
-			administration: "879318637524176906" 
+			administration: "879289786597257216/" 
 		},
 		guildId: "812993519177826365",
 		clientId: "986328241042239508",
@@ -22,14 +22,14 @@ export default {
 		]
 	},
 	minecraft_server_api: {
-		chat: {
-			globalPrefix: "!"
-		},
 		web: {
 			ws: "ws://localhost:4567/v1/ws/console",
 			http: "http://localhost:4567/v1",
-			port: 3000
+			port: 4568
 		}
+	},
+	rest:{
+		port: 3000
 	},
 	modules: {
 		chat: {
@@ -37,6 +37,9 @@ export default {
 		},
 		profiles: {
 			skinDirectory: process.cwd() + '/images/skins'
+		},
+		payments: {
+			botlink: ""
 		}
 	}
 } as Config

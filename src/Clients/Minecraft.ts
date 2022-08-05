@@ -31,9 +31,6 @@ export default class MinecraftServerAPI extends EventEmitter {
 		this.api.listen(this.port, () => this.logger.Log(`Started Minecraft API server on port ${this.port}`))
 		this.connect()
 	}
-	public addRoute(path: string, type: "get" | "post" | "put" | "delete", handler: (req: Request, res: Response) => any) {
-		this.api[type](path, handler)
-	}
 	private reconnect() {
 		if (this.lastTimeout <= 30_000) 
 			this.lastTimeout += 5_000

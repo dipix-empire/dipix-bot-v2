@@ -9,12 +9,14 @@ import Secrets from "./types/Secrets"
 import Minecraft from "./Clients/Minecraft"
 import { PrismaClient } from "@prisma/client"
 import Logger from "./types/Logger"
+import REST from "./Clients/Rest"
 
 export default class App {
 	public readonly bot: Discord
 	public readonly minecraft: Minecraft
-	public readonly config: Config
+	public readonly rest: REST
 	public readonly prisma: PrismaClient
+	public readonly config: Config
 	private readonly logger: Logger
 	private appBusMain: AppBusMain
 	private readonly modules: Module[]
@@ -59,6 +61,7 @@ export default class App {
 			config.minecraft_server_api.web.port,
 			new Logger("CLIENT_MINECRAFT", config.logLevel)
 		)
+		this.rest = new REST(config.rest.port, new Logger("CLIENT_REST", config.logLevel))
 		this.prisma = new PrismaClient()
 		this.appBusMain = new AppBusMain(this.logger)
 		this.config = config

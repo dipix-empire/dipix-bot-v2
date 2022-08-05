@@ -17,7 +17,7 @@ export default new Module(
 			}),
 			new ServertapEvent("newline", async (line: newLineData) => {
 				try {
-					if (!line.msg.startsWith(app.config.minecraft_server_api.chat.globalPrefix)) return
+					if (!line.msg.startsWith("!")) return
 					await (app.bot.channels.cache.get(app.config.bot.channels.chatIntagration) as TextChannel).send(line.msg)
 				} catch(err) {
 					logger.Error(err)
