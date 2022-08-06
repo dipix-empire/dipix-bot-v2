@@ -8,7 +8,7 @@ export default new Module(
 	"console", (app: App,  appBusModule: AppBusModuleComponent) => {
 		return [
 			new DiscordEvent("messageCreate", async (msg: Message) => {
-
+				
 			})
 		]
 	}

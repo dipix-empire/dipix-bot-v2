@@ -39,7 +39,7 @@ export default {
 			skinDirectory: process.cwd() + '/images/skins'
 		},
 		payments: {
-			botlink: ""
+			botlink: "https://t.me/philainel"
 		}
 	}
 } as Config

@@ -30,6 +30,8 @@ model User {
   plan       Plan      @default(default)
   promo      Promo?    @relation(fields: [promoId], references: [id])
   promoId    String?   @db.ObjectId
+  invitedBy  String?
+  invites    String[]
 }
 
 model Donate {

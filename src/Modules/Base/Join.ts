@@ -135,7 +135,7 @@ export default new Module(
 								requestId: req.id,
 								country: undefined,
 								lastUpdate: new Date(),
-								nextUpdate: new Date(Date.now() + 3 * 24 * 60 * 60),
+								nextUpdate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
 								
 							}
 						})

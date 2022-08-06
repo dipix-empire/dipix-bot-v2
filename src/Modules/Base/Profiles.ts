@@ -80,7 +80,7 @@ export default new Module(
 							return await interaction.editReply({ embeds: [ErrorEmbed()] })
 						await interaction.editReply({embeds:[ProcessingEmbed("Файл скина загружается...")]})
 						let imageId = await DownloadImageByUrl(file.url)
-						let oldProfile = await app.prisma.profile.findFirst({ where: { user, number } })
+						let oldProfile = await app.prisma.profile.findFirst({ where: { userId: user.id, number } })
 						if (oldProfile) {
 							fs.rmSync(`${app.config.modules.profiles.skinDirectory}/${oldProfile.file}.png`)
 							await app.prisma.profile.update({where: {id: oldProfile.id}, data:{file: imageId}})
