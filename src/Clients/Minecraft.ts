@@ -12,11 +12,13 @@ export default class MinecraftServerAPI extends EventEmitter {
 	private readonly api: express.Express
 	private readonly logger: Logger
 	private readonly axios: Axios
+	private consoleBuffer = [] as string[]
 	private ws: WebSocket | null = null
 	private lastTimeout: number = 0
-
+	
 	public sendToConsole(message: string) {
-		this.ws?.send(message)
+		if (this.ws == null) this.consoleBuffer.push(message)
+		else this.ws.send(message)
 	}
 
 	public start() {
@@ -54,6 +56,9 @@ export default class MinecraftServerAPI extends EventEmitter {
 			this.ws.on("open", () => {
 				this.lastTimeout = 0
 				this.logger.Log("Connected to server via servertap:ws")
+				for (let i = 0; i < this.consoleBuffer.length; i++) {
+					this.ws?.send(this.consoleBuffer.shift())
+				}
 				this.emit("open")
 			})
 			this.ws.on("message", (msg: string) => {

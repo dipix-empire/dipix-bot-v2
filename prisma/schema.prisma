@@ -9,27 +9,28 @@ datasource db {
 
 model User {
   //id
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
   //personal data
-  nickname   String    @unique
+  nickname   String             @unique
   age        Int
-  request    Request   @relation(fields: [requestId], references: [id])
-  requestId  String    @unique
+  request    Request            @relation(fields: [requestId], references: [id])
+  requestId  String             @unique
   //social links
-  discord    String    @unique
+  discord    String             @unique
   telegram   String?
   //in-game info
   profile    Profile[]
-  country    Country?  @relation(fields: [countryId], references: [id])
-  countryId  String?   @db.ObjectId
+  country    Country?           @relation(fields: [countryId], references: [id])
+  countryId  String?            @db.ObjectId
   //payments
-  balance    Float     @default(0)
+  balance    Float              @default(0)
+  status     SubscriptionStatus @default(active)
   donates    Donate[]
   lastUpdate DateTime // Last time when subscription updated
   nextUpdate DateTime // Next time when subscription should be updated
-  plan       Plan      @default(default)
-  promo      Promo?    @relation(fields: [promoId], references: [id])
-  promoId    String?   @db.ObjectId
+  plan       Plan               @default(default)
+  promo      Promo?             @relation(fields: [promoId], references: [id])
+  promoId    String?            @db.ObjectId
   invitedBy  String?
   invites    String[]
 }
@@ -45,6 +46,11 @@ model Donate {
 enum Plan {
   default
   sponsor
+}
+
+enum SubscriptionStatus {
+  active
+  expired
 }
 
 model Promo {
@@ -81,7 +87,7 @@ model Country {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   discord  String   @unique
   name     String   @unique
-  citizens User[]
+  residents User[]
   ruler    String
   police   String[]
   mayor    String[]

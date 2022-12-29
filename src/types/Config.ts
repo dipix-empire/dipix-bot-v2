@@ -33,7 +33,10 @@ export default interface Config {
 			skinDirectory: string
 		},
 		payments: {
-			botlink: string
+			botlink: string,
+			updateTimes: any[]
+			updateRange: number,
+			noPaymentRole: string
 		}
 	}
 }

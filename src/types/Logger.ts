@@ -2,12 +2,13 @@ export default class Logger {
 	
 	public readonly source: string
 	public readonly level: logLevel
-	public readonly template = (level: string, message: string) => `[${new Date().toLocaleTimeString()} ${level.toUpperCase()} from ${this.source.toUpperCase()}] > ${message}`
+	public readonly template = (level: string, message: string) => 
+		`[${new Date().toLocaleTimeString()} ${level.toUpperCase()}] > [${this.source.toUpperCase()}]: ${message}`
 	
-	public Error(err: Error | unknown) {
+	public Error(err: Error | unknown, msg?: string) {
 		if (this.level < 0) return
-		console.log(this.template("ERROR","There is an error:"))
-		console.log(err)
+		console.log(this.template("ERROR", msg || "There is an error:"))
+		console.error(err)
 	}
 	public Warn(msg: string) {
 		if (this.level < 1) return
@@ -19,7 +20,7 @@ export default class Logger {
 	}
 	public Verbose(msg: string) {
 		if (this.level < 3) return
-		console.log(this.template("VERBOSE", msg))
+		console.log(this.template("VERB", msg))
 	}
 	public Debug(msg: string, ...data: any) {
 		if (this.level < 4) return

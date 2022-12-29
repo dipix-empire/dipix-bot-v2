@@ -11,11 +11,11 @@ import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 export default new Module(
 	"test",
 	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		app.bot.uploadCommand(app.config.bot.guildId, (slashCommand: SlashCommandBuilder) =>
+		logger.Verbose(app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("test")
 				.setDescription("Тест для модераторов.")
-		)
+		))
 		return [
 			new DiscordEvent("interaction", async (interaction: CommandInteraction) => {
 				if (!interaction.isCommand()) return

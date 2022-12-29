@@ -40,7 +40,7 @@ export default class App {
 			})
 		})
 		await this.prisma.$connect()
-		this.bot.start(this.config.bot.guildId)
+		this.bot.start(this)
 		this.minecraft.start()
 	}
 	
@@ -52,7 +52,8 @@ export default class App {
 			{
 				intents: config.bot.intents
 			},
-			new Logger("CLIENT_BOT", config.logLevel)
+			new Logger("CLIENT_BOT", config.logLevel),
+			config.bot.guildId
 		)
 		this.minecraft = new Minecraft(
 			secrets.servertap_token,

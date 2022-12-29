@@ -17,7 +17,7 @@ export default new Module(
 	"profiles",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 
-		logger.Verbose(app.bot.uploadCommand(app.config.bot.guildId, (slashCommand: SlashCommandBuilder) =>
+		logger.Verbose(app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("profile")
 				.setDescription("Управление профилями пользователя")

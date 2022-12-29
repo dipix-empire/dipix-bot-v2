@@ -1,9 +1,9 @@
 import Base from "./Base";
-import Info from "./Info";
+import Common from "./Common";
 import Shared from "./Shared";
 
 export default [
-	Info,
+	...Common,
 	...Base,
 	...Shared
 ]

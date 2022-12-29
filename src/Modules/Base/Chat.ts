@@ -1,4 +1,4 @@
-import { Message, TextChannel } from "discord.js";
+import { Message, MessageEmbed, TextChannel } from "discord.js";
 import { EventEmitter } from "stream";
 import App from "../../App";
 import { newLineData } from "../../Clients/Minecraft";
@@ -6,7 +6,7 @@ import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
 import Module from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
-import ServertapEvent from "../../types/ModuleEvent/MinecraftEvent";
+import MinecraftEvent from "../../types/ModuleEvent/MinecraftEvent";
 
 export default new Module(
 	"chat", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
@@ -15,10 +15,17 @@ export default new Module(
 				if (msg.channel.id != app.config.bot.channels.chatIntagration) return
 				
 			}),
-			new ServertapEvent("newline", async (line: newLineData) => {
+			new MinecraftEvent("PlayerChat", async (ctx: any) => {
 				try {
-					if (!line.msg.startsWith("!")) return
-					await (app.bot.channels.cache.get(app.config.bot.channels.chatIntagration) as TextChannel).send(line.msg)
+					if (!ctx.message.startsWith("!")) return
+					let user = await app.prisma.user.findFirst({where: {nickname: ctx.player}})
+					if (!user) return logger.Error(new Error("Undefined user."))
+					let dUser = await app.bot.users.fetch(user.discord)
+					await (app.bot.channels.cache.get(app.config.bot.channels.chatIntagration) as TextChannel)
+						.send({embeds: [
+							new MessageEmbed()
+								.setDescription(`<@${dUser.id}> **->** ${ctx.message}`)
+						]})
 				} catch(err) {
 					logger.Error(err)
 				}

@@ -39,7 +39,10 @@ export default {
 			skinDirectory: process.cwd() + '/images/skins'
 		},
 		payments: {
-			botlink: "https://t.me/philainel"
+			botlink: "https://t.me/philainel",
+			updateRange: 24 * 60 * 60 * 1000,
+			updateTimes: [{hours:10, minutes:0}],
+			noPaymentRole: "1007353560746430616"
 		}
 	}
 } as Config
