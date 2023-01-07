@@ -15,13 +15,15 @@ export default (app: App, appBusModule: AppBusModuleComponent, logger: Logger) =
 		if (!user) return await interaction.editReply({ embeds: [ErrorEmbed("Пользователь не найден.")] })
 		let donates = await app.prisma.donate.findMany({ where: { userId: user.id } })
 		let replyEmbed = InfoEmbed("Информация о Вашем счёте")
-			.addField('Баланс', `$${user.balance}`)
-			.addField('Тариф', getPlanName(user.plan), true)
-			.addField("Следующее обновление подписки", user.nextUpdate.toLocaleString())
-			.addField("Последнее обновление подписки", user.lastUpdate.toLocaleString())
+			.addFields([
+				{ name: 'Баланс', value: `$${user.balance}` },
+				{ name: 'Тариф', value: getPlanName(user.plan), inline: true },
+				{ name: "Следующее обновление подписки", value: user.nextUpdate.toLocaleString() },
+				{ name: "Последнее обновление подписки", value: user.lastUpdate.toLocaleString() }
+			])
 		if (donates.length != 0) {
 			replyEmbed
-				.addField("Сумма донатов", `${donates.map(e => e.value).reduce((sum, a) => sum + a, 0)}$`)
+				.addFields([{ name: "Сумма донатов", value: `$${donates.map(e => e.value).reduce((sum, a) => sum + a, 0)}` }])
 		}
 
 		await interaction.editReply({

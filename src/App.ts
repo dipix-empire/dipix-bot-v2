@@ -23,7 +23,7 @@ export default class App {
 
 	async start() {
 		this.modules.forEach(async m => {
-			let logger = new Logger(m.name, this.config.logLevel)
+			let logger = new Logger(m.name, this.config.logLevel, "module")
 			logger.Verbose(`Enabling module '${m.name}'`);
 			(await m.prepare(this, new AppBusModuleComponent(this.appBusMain, m.name, logger), logger)).forEach(e => {
 				switch(e.type) {
@@ -52,7 +52,7 @@ export default class App {
 			{
 				intents: config.bot.intents
 			},
-			new Logger("CLIENT_BOT", config.logLevel),
+			new Logger("Bot", config.logLevel, "client"),
 			config.bot.guildId
 		)
 		this.minecraft = new Minecraft(
@@ -60,9 +60,9 @@ export default class App {
 			config.minecraft_server_api.web.ws,
 			config.minecraft_server_api.web.http,
 			config.minecraft_server_api.web.port,
-			new Logger("CLIENT_MINECRAFT", config.logLevel)
+			new Logger("Minecraft", config.logLevel, "client")
 		)
-		this.rest = new REST(config.rest.port, new Logger("CLIENT_REST", config.logLevel))
+		this.rest = new REST(config.rest.port, new Logger("Rest", config.logLevel, "client"))
 		this.prisma = new PrismaClient()
 		this.appBusMain = new AppBusMain(this.logger)
 		this.config = config

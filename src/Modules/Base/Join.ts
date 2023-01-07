@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { Message as DMsg, Interaction, MessageActionRow, MessageButton, MessageEmbed, TextChannel, ThreadChannel } from "discord.js";
+import { Message as DMsg, Interaction, ActionRowBuilder, ButtonBuilder, EmbedBuilder, TextChannel, ThreadChannel, ButtonStyle, APIActionRowComponent, APIButtonComponent, MessageManager, Collection } from "discord.js";
 import { EventEmitter } from "stream";
 import { v4 } from "uuid";
 import App from "../../App";
@@ -14,7 +14,7 @@ import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 export default new Module(
 	"join",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		logger.Verbose(app.bot.uploadCommand("main",(slashCommand: SlashCommandBuilder) =>
+		logger.Verbose(app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("join")
 				.setDescription("Написать заявку для присоединения к серверу.")
@@ -31,24 +31,25 @@ export default new Module(
 				)
 		))
 		let actionRow = (reqID: string, disabled = false, success = false) =>
-			new MessageActionRow()
+			new ActionRowBuilder()
 				.addComponents(
-					new MessageButton()
+					new ButtonBuilder()
 						.setCustomId(`join:accept:${reqID}`)
 						.setLabel('Принять')
-						.setStyle(success ? 'SUCCESS' : 'PRIMARY')
+						.setStyle(success ? ButtonStyle.Success : ButtonStyle.Danger)
 						.setDisabled(disabled),
-					new MessageButton()
+					new ButtonBuilder()
 						.setCustomId(`join:reject:${reqID}`)
 						.setLabel('Отклонить')
-						.setStyle('DANGER')
+						.setStyle(ButtonStyle.Danger)
 						.setDisabled(disabled),
-					new MessageButton()
+					new ButtonBuilder()
 						.setCustomId(`join:check:${reqID}`)
 						.setLabel('Проверить')
-						.setStyle("SECONDARY")
+						.setStyle(ButtonStyle.Secondary)
 						.setDisabled(disabled)
 				)
+				.toJSON() as APIActionRowComponent<APIButtonComponent>
 		let events = new EventEmitter()
 		appBusModule.onMessage((msg: Message) => {
 			if (msg.sender == "conversation") {
@@ -81,7 +82,7 @@ export default new Module(
 									autoArchiveDuration: 1440
 								})).send({
 									embeds: [
-										new MessageEmbed()
+										new EmbedBuilder()
 											.setTitle("Заявка на присоединение.")
 											.setDescription(`Заявку принимает <@&${app.config.bot.roles.administration}>`)
 											.addFields((msg.data.conversation as Conversation).questions.map((q, k) => ({ name: q.question, value: msg.data.conversation.answers[k], inline: true })))
@@ -136,7 +137,7 @@ export default new Module(
 								country: undefined,
 								lastUpdate: new Date(),
 								nextUpdate: new Date(),
-								
+
 							}
 						})
 						await (interaction.message as DMsg).edit({ components: [actionRow(req.id, true, true)] })
@@ -146,11 +147,14 @@ export default new Module(
 					}
 					else if (action == "reject") {
 						await app.prisma.request.delete({ where: { id: req.id } })
-						let message = (await interaction.channel?.messages.fetch({ limit: 10 }))?.filter(msg => msg.author.id == interaction.user.id).first()
+						let messages: Collection<string, DMsg<true>> | null = (await interaction.channel?.messages.fetch({ limit: 10 })) as Collection<string, DMsg<true>>
+						let message: DMsg<true> | null = null
+						if (messages != null) 
+							message = messages.filter((msg: DMsg<true>) => msg.author.id == interaction.user.id).first() || null
 						await (interaction.message as DMsg).edit({ components: [actionRow(req.id, true)] })
 						await interaction.editReply({
 							embeds: [
-								new MessageEmbed()
+								new EmbedBuilder()
 									.setTimestamp(Date.now())
 									.setTitle("Заявка отклонена.")
 									.setFooter(footer)
@@ -173,7 +177,7 @@ export default new Module(
 						if (intersections.length) {
 							await interaction.editReply({
 								embeds: [
-									new MessageEmbed()
+									new EmbedBuilder()
 										.setTimestamp(Date.now())
 										.setFooter(footer)
 										.setTitle("Обнаружено совпадение!")
@@ -193,7 +197,7 @@ export default new Module(
 				if (!interaction.isCommand() || interaction.commandName != "autoaccept") return
 				try {
 					await interaction.deferReply({ ephemeral: true })
-					if (!interaction.memberPermissions?.has("MANAGE_GUILD")) return await interaction.editReply({ embeds: [ErrorEmbed("Недостаточно полномочий.")] })
+					if (!interaction.memberPermissions?.has("ManageGuild")) return await interaction.editReply({ embeds: [ErrorEmbed("Недостаточно полномочий.")] })
 					let user = interaction.options.getUser('user', true)
 					if (await app.prisma.user.findFirst({ where: { discord: user.id } }))
 						return await interaction.editReply({ embeds: [ErrorEmbed(`Пользователь <@${user.id}> уже является игроком.`)] })
@@ -211,7 +215,7 @@ export default new Module(
 			}),
 			new DiscordEvent("ready", async () => {
 				try {
-					await app.prisma.request.updateMany({where:{locked: true}, data:{locked: false}})
+					await app.prisma.request.updateMany({ where: { locked: true }, data: { locked: false } })
 				} catch (err) {
 					logger.Error(err)
 				}

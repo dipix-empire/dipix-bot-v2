@@ -15,10 +15,10 @@ export default {
 		guildId: "812993519177826365",
 		clientId: "986328241042239508",
 		intents: [
-			Discord.Intents.FLAGS.GUILDS,
-			Discord.Intents.FLAGS.GUILD_MESSAGES,
-			Discord.Intents.FLAGS.GUILD_MEMBERS,
-			Discord.Intents.FLAGS.DIRECT_MESSAGES,
+			Discord.GatewayIntentBits.Guilds,
+			Discord.GatewayIntentBits.GuildMessages,
+			Discord.GatewayIntentBits.GuildMembers,
+			Discord.GatewayIntentBits.DirectMessages,
 		]
 	},
 	minecraft_server_api: {

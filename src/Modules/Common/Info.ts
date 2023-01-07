@@ -15,7 +15,7 @@ export default new Module(
 		const test = new Task("test-task", ({}: TaskHandlerArgs) => {
 			logger.Log("TEST LOG")
 		}, logger)
-		test.shedule("*/30 * * * * *")
+		// test.shedule("*/30 * * * * *")
 		return [
 			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 				if (!interaction.isCommand()) return

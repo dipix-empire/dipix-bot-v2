@@ -1,13 +1,11 @@
 export default class Logger {
 	
-	public readonly source: string
-	public readonly level: logLevel
 	public readonly template = (level: string, message: string) => 
-		`[${new Date().toLocaleTimeString()} ${level.toUpperCase()}] > [${this.source.toUpperCase()}]: ${message}`
+		`[${new Date().toLocaleTimeString()} ${level.toUpperCase()} (${this.type ? `${this.type[0].toUpperCase()}/` : ""}${this.source.toUpperCase()})]: ${message}`
 	
 	public Error(err: Error | unknown, msg?: string) {
 		if (this.level < 0) return
-		console.log(this.template("ERROR", msg || "There is an error:"))
+		console.log(this.template("ERROR", msg || "An Error have been catched:"))
 		console.error(err)
 	}
 	public Warn(msg: string) {
@@ -28,9 +26,11 @@ export default class Logger {
 		if (data.length > 0) console.log(...data)
 	}
 	
-	constructor(source: string, level: logLevel) {
-		this.source = source
-		this.level = level
+	constructor(
+		public readonly source: string, 
+		public readonly level: logLevel, 
+		public readonly type?: "client" | "module"
+	) {
 	}
 }
 export enum logLevel {

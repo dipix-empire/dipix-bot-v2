@@ -57,7 +57,7 @@ export default class MinecraftServerAPI extends EventEmitter {
 				this.lastTimeout = 0
 				this.logger.Log("Connected to server via servertap:ws")
 				for (let i = 0; i < this.consoleBuffer.length; i++) {
-					this.ws?.send(this.consoleBuffer.shift())
+					this.ws?.send(this.consoleBuffer.shift() || "")
 				}
 				this.emit("open")
 			})

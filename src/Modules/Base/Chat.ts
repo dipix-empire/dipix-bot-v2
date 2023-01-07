@@ -1,4 +1,4 @@
-import { Message, MessageEmbed, TextChannel } from "discord.js";
+import { Message, EmbedBuilder, TextChannel } from "discord.js";
 import { EventEmitter } from "stream";
 import App from "../../App";
 import { newLineData } from "../../Clients/Minecraft";
@@ -23,7 +23,7 @@ export default new Module(
 					let dUser = await app.bot.users.fetch(user.discord)
 					await (app.bot.channels.cache.get(app.config.bot.channels.chatIntagration) as TextChannel)
 						.send({embeds: [
-							new MessageEmbed()
+							new EmbedBuilder()
 								.setDescription(`<@${dUser.id}> **->** ${ctx.message}`)
 						]})
 				} catch(err) {

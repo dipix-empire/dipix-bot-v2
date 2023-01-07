@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { ChannelType, Message } from "discord.js";
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Conversation from "../../types/Conversation";
@@ -22,7 +22,7 @@ export default new Module(
 		return [
 			new DiscordEvent('messageCreate', async (msg: Message) => {
 				if (!(msg.author.id in conversations)) return
-				if (msg.channel.type != "DM") return
+				if (msg.channel.type != ChannelType.DM) return
 				let conversation = conversations[msg.author.id]
 				if (!conversation.currentQuestion().answerRegExp.test(msg.content.toLowerCase())) {
 					await msg.reply("Некорректный ответ")

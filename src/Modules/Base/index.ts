@@ -5,11 +5,12 @@ import Join from "./Join";
 import Profiles from "./Profiles";
 import Payments from "./Payments";
 
+//TODO: MIGRATE PROFILES,
 export default [
 	Chat,
 	Console,
 	Join,
 	Conversation,
-	Profiles,
+	// Profiles,
 	Payments
 ]
