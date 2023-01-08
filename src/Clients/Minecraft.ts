@@ -45,7 +45,12 @@ export default class MinecraftServerAPI extends EventEmitter {
 	private async connect() {
 		await this.waitForTimeout()
 		try {
-			await this.axios.get(this.httpuri + '/ping')
+			try {
+				await this.axios.get(this.httpuri + '/ping')
+			} catch(err) {
+				this.logger.VerboseError(err)
+				throw new Error("Unable to connect to Minecraft server.")
+			}
 			this.emit("connecting")
 			// await axios.get(a)
 			this.ws = new WebSocket(this.wsuri, [], {
@@ -73,7 +78,6 @@ export default class MinecraftServerAPI extends EventEmitter {
 				this.logger.Error(err)
 			})
 		} catch(err) {
-			console.log(this)
 			this.logger.Error(err)
 			this.reconnect()
 		}
