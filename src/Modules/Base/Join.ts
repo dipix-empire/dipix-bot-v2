@@ -36,7 +36,7 @@ export default new Module(
 					new ButtonBuilder()
 						.setCustomId(`join:accept:${reqID}`)
 						.setLabel('Принять')
-						.setStyle(success ? ButtonStyle.Success : ButtonStyle.Danger)
+						.setStyle(success ? ButtonStyle.Success : ButtonStyle.Primary)
 						.setDisabled(disabled),
 					new ButtonBuilder()
 						.setCustomId(`join:reject:${reqID}`)
@@ -128,16 +128,22 @@ export default new Module(
 					await app.prisma.request.update({ where: { id: req.id }, data: { locked: true } })
 					let reqData = JSON.parse(req.fields)
 					if (action == "accept") {
-						await app.prisma.user.create({
+						let user = await app.prisma.user.create({
 							data: {
 								nickname: reqData[1],
 								age: parseInt(reqData[2]),
 								discord: req.discord,
 								requestId: req.id,
 								country: undefined,
-								lastUpdate: new Date(),
-								nextUpdate: new Date(),
-
+							}
+						})
+						await app.prisma.subscription.create({
+							data: {
+								userId: user.id,
+								started: new Date(),
+								ends: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+								status: "active",
+								plan: user.nextPlan,
 							}
 						})
 						await (interaction.message as DMsg).edit({ components: [actionRow(req.id, true, true)] })
@@ -149,7 +155,7 @@ export default new Module(
 						await app.prisma.request.delete({ where: { id: req.id } })
 						let messages: Collection<string, DMsg<true>> | null = (await interaction.channel?.messages.fetch({ limit: 10 })) as Collection<string, DMsg<true>>
 						let message: DMsg<true> | null = null
-						if (messages != null) 
+						if (messages != null)
 							message = messages.filter((msg: DMsg<true>) => msg.author.id == interaction.user.id).first() || null
 						await (interaction.message as DMsg).edit({ components: [actionRow(req.id, true)] })
 						await interaction.editReply({

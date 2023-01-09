@@ -9,30 +9,40 @@ datasource db {
 
 model User {
   //id
-  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
   //personal data
-  nickname   String             @unique
-  age        Int
-  request    Request            @relation(fields: [requestId], references: [id])
-  requestId  String             @unique
+  nickname      String         @unique
+  age           Int
+  request       Request        @relation(fields: [requestId], references: [id])
+  requestId     String         @unique @db.ObjectId
   //social links
-  discord    String             @unique
-  telegram   String?
+  discord       String         @unique
+  telegram      String?
   //in-game info
-  profile    Profile[]
-  country    Country?           @relation(fields: [countryId], references: [id])
-  countryId  String?            @db.ObjectId
+  profile       Profile[]
+  country       Country?       @relation(fields: [countryId], references: [id])
+  countryId     String?        @db.ObjectId
   //payments
-  balance    Float              @default(0)
-  status     SubscriptionStatus @default(active)
-  donates    Donate[]
-  lastUpdate DateTime // Last time when subscription updated
-  nextUpdate DateTime // Next time when subscription should be updated
-  plan       Plan               @default(default)
-  promo      Promo?             @relation(fields: [promoId], references: [id])
-  promoId    String?            @db.ObjectId
-  invitedBy  String?
-  invites    String[]
+  balance       Float          @default(0)
+  donates       Donate[]
+  invitedBy     String?
+  invites       String[]
+  subscriptions Subscription[]
+  nextPlan      Plan           @default(default)
+  nextPromo     Promo?         @relation(fields: [nextPromoId], references: [id])
+  nextPromoId   String?        @db.ObjectId
+}
+
+model Subscription {
+  id      String             @id @default(auto()) @map("_id") @db.ObjectId
+  user    User               @relation(fields: [userId], references: [id])
+  userId  String             @db.ObjectId
+  status  SubscriptionStatus
+  started DateTime
+  ends    DateTime
+  plan    Plan
+  promo   Promo?             @relation(fields: [promoId], references: [id])
+  promoId String?            @db.ObjectId
 }
 
 model Donate {
@@ -54,10 +64,11 @@ enum SubscriptionStatus {
 }
 
 model Promo {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  percentage Int
-  whoAdded   String
-  user       User[]
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  percentage   Int
+  whoAdded     String
+  user         User[]
+  Subscription Subscription[]
 }
 
 model Request {
@@ -84,12 +95,12 @@ model Profile {
 }
 
 model Country {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  discord  String   @unique
-  name     String   @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  discord   String   @unique
+  name      String   @unique
   residents User[]
-  ruler    String
-  police   String[]
-  mayor    String[]
-  judge    String[]
+  ruler     String
+  police    String[]
+  mayor     String[]
+  judge     String[]
 }

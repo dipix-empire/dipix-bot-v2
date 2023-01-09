@@ -4,7 +4,7 @@ import { logLevel } from "./Logger"
 export default interface Config {
 	logLevel: logLevel,
 	bot: {
-		intents: Discord.BitFieldResolvable<Discord.IntentsString, number>,
+		intents: Discord.GatewayIntentBits[]
 		guildId: string
 		clientId: string,
 		channels: {
@@ -36,7 +36,8 @@ export default interface Config {
 			botlink: string,
 			updateTimes: any[]
 			updateRange: number,
-			noPaymentRole: string
+			noPaymentRole: string,
+			checkOnStart?: boolean
 		}
 	}
 }

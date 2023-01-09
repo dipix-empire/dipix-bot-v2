@@ -17,7 +17,7 @@ export default new Module(
 				.setDescription("Тест для модераторов.")
 		))
 		return [
-			new DiscordEvent("interaction", async (interaction: CommandInteraction) => {
+			new DiscordEvent("interactionCreate", async (interaction: CommandInteraction) => {
 				if (!interaction.isCommand()) return
 				if (interaction.commandName != "test") return
 				try {

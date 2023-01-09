@@ -14,8 +14,8 @@ export default new Module(
 	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		const test = new Task("test-task", ({}: TaskHandlerArgs) => {
 			logger.Log("TEST LOG")
-		}, logger)
-		// test.shedule("*/30 * * * * *")
+		})
+		// test.schedule("*/30 * * * * *", logger)
 		return [
 			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 				if (!interaction.isCommand()) return
