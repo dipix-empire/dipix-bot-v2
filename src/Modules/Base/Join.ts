@@ -242,8 +242,8 @@ export default new Module(
 					if (action == "accept") {
 						let user = await app.prisma.user.create({
 							data: {
-								nickname: reqData[1],
-								age: parseInt(reqData[2]),
+								nickname: reqData[0],
+								age: parseInt(reqData[1]),
 								discord: req.discord,
 								requestId: req.id,
 								country: undefined,
