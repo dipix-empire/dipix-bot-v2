@@ -1,14 +1,10 @@
 import { ModalBuilder, SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { channel } from "diagnostics_channel";
-import { Message as DMsg, Interaction, ActionRowBuilder, ButtonBuilder, EmbedBuilder, TextChannel, ThreadChannel, ButtonStyle, APIActionRowComponent, APIButtonComponent, TextInputBuilder, MessageManager, TextInputStyle, Collection } from "discord.js";
-import { setDefaultResultOrder } from "dns";
+import { Message as DMsg, Interaction, ActionRowBuilder, ButtonBuilder, ButtonInteraction, EmbedBuilder, TextChannel, ThreadChannel, ButtonStyle, APIActionRowComponent, APIButtonComponent, TextInputBuilder, TextInputStyle, Collection, ModalSubmitInteraction } from "discord.js";
 import { EventEmitter } from "stream";
-import { v4 } from "uuid";
 import App from "../../App";
 import { ErrorEmbed, footer, ProcessingEmbed, SuccesfulEmbed } from "../../Data/Embeds";
 import Message from "../../types/AppBus/Message";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
-import Conversation from "../../types/Conversation";
 import Logger from "../../types/Logger";
 import Module from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
@@ -32,7 +28,18 @@ export default new Module(
 						.setRequired(true)
 				)
 		))
-		let ButtonActionRow_1 = (reqID: string, disabled = false, success = false) =>
+		const Embed = (Text_1: string, Text_2: string, TextInput: string[]) => new EmbedBuilder()
+			.addFields(
+				{ name: 'Ник в Майнкрафт', value: `${TextInput[0]}`, inline: true },
+				{ name: 'Пол', value: `${Text_1}`, inline: true },
+				{ name: 'Возраст', value: `${TextInput[1]}`, inline: true },
+				{ name: 'Пригласил / Промокод', value: `${Text_2}`, inline: true },
+				{ name: 'Клиент', value: `${TextInput[3]}`, inline: true }
+			)
+			.setColor('#3ba55d')
+			.setFooter(footer)
+			.setTimestamp(Date.now())
+		let ButtonActionRowAdmin = (reqID: string, disabled = false, success = false) =>
 			new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
@@ -52,24 +59,27 @@ export default new Module(
 						.setDisabled(disabled)
 				)
 				.toJSON() as APIActionRowComponent<APIButtonComponent>
-
-		let ButtonActionRow_2 = (reqID: string, disabled = false, success = false) =>
+		let ButtonActionRowUser = (reqID: string, disabledSend = true, disabledAll = false) =>
 			new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
-						.setCustomId(`join:user:confirm:${reqID}`)
-						.setLabel('Подтвердить')
-						.setStyle(ButtonStyle.Danger),
+						.setCustomId(`join:user:send:${reqID}`)
+						.setLabel('Отправить')
+						.setStyle(ButtonStyle.Danger)
+						.setDisabled(disabledAll || disabledSend),
+					new ButtonBuilder()
+						.setCustomId(`join:user:rules:${reqID}`)
+						.setLabel('Правила')
+						.setStyle(ButtonStyle.Danger)
+						.setDisabled(disabledAll),
 					new ButtonBuilder()
 						.setCustomId(`join:user:biography:${reqID}`)
 						.setLabel('Биография')
-						.setStyle(ButtonStyle.Primary)
+						.setStyle(ButtonStyle.Secondary)
+						.setDisabled(disabledAll)
 				)
 				.toJSON() as APIActionRowComponent<APIButtonComponent>
-
-		let reqUUID = v4()
-
-		let ModalActionRow_1 = new ModalBuilder()
+		let ModalActionRowQuestion = new ModalBuilder()
 			.setCustomId(`join:modal_1`)
 			.setTitle('заявка на присоединение')
 			.addComponents(
@@ -88,7 +98,7 @@ export default new Module(
 							.setCustomId(`join:question_2`)
 							.setLabel('Ваш возраст?')
 							.setPlaceholder('обязательно')
-							.setMaxLength(3)
+							.setMaxLength(2)
 							.setStyle(TextInputStyle.Short)
 					),
 				new ActionRowBuilder<TextInputBuilder>()
@@ -108,7 +118,7 @@ export default new Module(
 							.setLabel('Ваш клиент (Java, Bedrock, Оба)?')
 							.setPlaceholder('обязательно')
 							.setMaxLength(15)
-							.setStyle(TextInputStyle.Short)
+							.setStyle(TextInputStyle.Short),
 					),
 				new ActionRowBuilder<TextInputBuilder>()
 					.addComponents(
@@ -121,110 +131,155 @@ export default new Module(
 							.setRequired(false)
 					)
 			)
+		let ModalActionRowBiography = (reqID: string) => new ModalBuilder()
+			.setCustomId(`join:bio_modal:${reqID}`)
+			.setTitle('редактирование')
+			.addComponents(
+				new ActionRowBuilder<TextInputBuilder>()
+					.addComponents(
+						new TextInputBuilder()
+							.setCustomId(`join:biography`)
+							.setLabel('Биография')
+							.setPlaceholder('Биография вашего персонажа для РП')
+							.setMaxLength(2000)
+							.setStyle(TextInputStyle.Paragraph)
+					)
+			)
 		let events = new EventEmitter()
 		appBusModule.onMessage((msg: Message) => {
 			if (msg.sender == "conversation") {
 				events.emit(msg.data.id, msg)
 			}
 		})
+		let userBuffer: {[key: string]: Interaction} = {} 
 		return [
+			// Команда
 			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 				if (!interaction.isCommand() || interaction.commandName != "join") return
 				try {
-					await interaction.showModal(ModalActionRow_1);
+					if (await app.prisma.user.findFirst({ where: { discord: interaction.user.id } }) != null) return interaction.reply({ embeds: [ErrorEmbed('❌ Вы уже игрок. (How Did We Get Here?)')], ephemeral: true })
+					else { await interaction.showModal(ModalActionRowQuestion); }
 				} catch (err) {
 					logger.Error(err)
 					interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
 				}
 			}),
+			// Модалка основная инфа
 			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 				if (!interaction.isModalSubmit()) return
-				if (!interaction.customId.startsWith('join:')) return
+				if (!interaction.customId.startsWith('join:modal_1')) return
 				try {
-					if (await app.prisma.user.findFirst({ where: { discord: interaction.id } }) != null) return interaction.editReply({ embeds: [ErrorEmbed(`Вы уже игрок. (How Did We Get Here?)`)] })
-
-					const QPostfixes = ['_1', '_2', '_3', '_4', '_5']
-					const QTextInput = QPostfixes.map(x => {
+					const Postfixes = ['_1', '_2', '_3', '_4', '_5']
+					const TextInput = Postfixes.map(x => {
 						return interaction.fields.getTextInputValue(`join:question${x}`)
 					}).filter(x => typeof x === `string`)
-
-					let Text_1 = 'Не указан', Text_2 = 'Не указан'
-					if (QTextInput[2]) { Text_1 = QTextInput[2] }
-					if (QTextInput[4]) { Text_2 = QTextInput[4] }
+					// тут можно проще сделать
+					// let Text_1 = 'Не указан', Text_2 = 'Не указан'
+					// if (TextInput[2]) { Text_1 = TextInput[2] }
+					// if (TextInput[4]) { Text_2 = TextInput[4] }
+					let Text_1 = TextInput[2] || 'Не указан', Text_2 = TextInput[4] || 'Не указан'
 
 					let request = await app.prisma.request.create({
 						data: {
 							message: '',
-							fields: JSON.stringify(QTextInput),
+							fields: JSON.stringify(TextInput),
 							locked: false,
-							discord: interaction.user.id
+							discord: interaction.user.id,
 						}
 					})
-
-					// let data = interaction.customId.split(':')
-					// let action = data[2]
-					// let reqID = data[3]
-					// let req = await app.prisma.request.findFirst({ where: { id: reqID } })
-					// if (req == null) return await interaction.editReply({ embeds: [ErrorEmbed("Заявка не найдена (How did we get here?)")] })
-					// if (req.locked == true) return await interaction.editReply({ embeds: [ErrorEmbed("К заявке применено другое действие.")] })
-					// await app.prisma.request.update({ where: { id: req.id }, data: { locked: true } })
 
 					if (interaction.customId == `join:modal_1`) {
-						interaction.reply({
-							embeds: [
-								new EmbedBuilder()
-									.setTitle('Ваша заявка на присоединение')
-									.addFields(
-										{ name: 'Ник в Майнкрафт', value: `${QTextInput[0]}`, inline: true },
-										{ name: 'Пол', value: `${Text_1}`, inline: true },
-										{ name: 'Возраст', value: `${QTextInput[1]}`, inline: true },
-										{ name: 'Пригласил / Промокод', value: `${Text_2}`, inline: true },
-										{ name: 'Клиент', value: `${QTextInput[3]}`, inline: true }
-									)
-									.setColor('#3ba55d')
-									.setFooter(footer)
-									.setTimestamp(Date.now())
-							],
-							components: [ButtonActionRow_2(request.id)],
-							ephemeral: true
-						})
+						Embed(Text_1, Text_2, TextInput).setTitle('Ваша заявка на присоединение')
+						interaction.reply({ embeds: [Embed(Text_1, Text_2, TextInput)], components: [ButtonActionRowUser(request.id)], ephemeral: true })
+						userBuffer[`modal:${request.id}`] = interaction
 					}
-
-					const collector = interaction.channel?.createMessageComponentCollector({
-						//filter: int => interaction.customId == request.id
-					});
-
-					collector?.on(`collect`, async (int) => {
-						logger.Debug("COLLECTOR INT", int)
-						if (int.customId.startsWith("join:user:confirm:")) {
-						// if (action == `confirm`) {
-							// await int.reply({ content: 'Заявка отправлена на модерацию', ephemeral: true }),
-
-							await int.channel?.send({
-								embeds: [
-									new EmbedBuilder()
-										.setTitle(`Заявка: ${interaction.user.username}`)
-										.setURL(`https://discordapp.com/users/${interaction.user.id}/`)
-										.addFields(
-											{ name: 'Ник в Майнкрафт', value: `${QTextInput[0]}`, inline: true },
-											{ name: 'Пол', value: `${Text_1}`, inline: true },
-											{ name: 'Возраст', value: `${QTextInput[1]}`, inline: true },
-											{ name: 'Пригласил / Промокод', value: `${Text_2}`, inline: true },
-											{ name: 'Клиент', value: `${QTextInput[3]}`, inline: true }
-										)
-										.setColor('#3ba55d')
-										.setFooter(footer)
-										.setTimestamp(Date.now())
-								],
-								components: [ButtonActionRow_1(request.id)]
-							})
-						}
-					})
 				} catch (err) {
 					logger.Error(err)
 					interaction.replied || interaction.deferred ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
 				}
 			}),
+			// Кнопки Юзера
+			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
+				if (!(interaction instanceof ButtonInteraction)) return
+				if (!interaction.customId.startsWith("join:user:")) return
+				try {
+					let requestId = interaction.customId.split(":").pop()
+					let request = await app.prisma.request.findUnique({
+						where: { id: requestId }
+					})
+					if (request == null) throw new Error("Undefined request id")
+					let TextInput = JSON.parse(request.fields) as string[]
+					let Text_1 = TextInput[2] || 'Не указан', Text_2 = TextInput[4] || 'Не указан'
+					if (!userBuffer[`modal:${request.id}`]) return interaction.reply({embeds: [ErrorEmbed("Ошибка буфера данных, перепишите заявку заного.")], ephemeral: true})
+					logger.Debug("Interaction ID", interaction.customId)
+					if (interaction.customId.startsWith(`join:user:send:`)) {
+						await interaction.reply({ content: '✅ Заявка отправлена!', ephemeral: true })
+						Embed(Text_1, Text_2, TextInput).setTitle('Ваша заявка на присоединение')
+						await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput)], components: [ButtonActionRowUser(request.id, true, true)] })
+						Embed(Text_1, Text_2, TextInput).setTitle(`Заявка: ${interaction.user.username}`).setURL(`https://discordapp.com/users/${interaction.user.id}/`)
+						await interaction.channel?.send({ embeds: [Embed(Text_1, Text_2, TextInput)], components: [ButtonActionRowAdmin(request.id)] })
+					}
+					else if (interaction.customId.startsWith(`join:user:rules:`)) {
+						// Embed(Text_1, Text_2, TextInput).setTitle('Ваша заявка на присоединение')
+						await interaction.reply({
+							embeds: [
+								new EmbedBuilder()
+									.setTitle('Прочтите правила сервера')
+									.setURL('https://docs.google.com/document/d/1nldrwFBnT7rf2Pu7jDGGAaIpk6L6nwDd2tja7_c5B2Q/edit')
+									.setFooter({ text: 'Отправляя заявку вы принимаете правила сервера' })
+							],
+							ephemeral: true
+						})
+						await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput)], components: [ButtonActionRowUser(request.id, false, false)] })
+					}
+					else if (interaction.customId.startsWith(`join:user:biography:`)) {
+						//int.reply({content: `⛔ В разработке!`, ephemeral: true})
+						await interaction.showModal(ModalActionRowBiography(request.id));
+
+						// const filter = (int: ModalSubmitInteraction) => int.customId == 'join:modal_2';
+						// let submission = await interaction.awaitModalSubmit({ filter, time: 120000 })
+
+						// const biography = submission.fields.getTextInputValue('join:biography');
+						// 
+						// logger.Debug("", submission.replied)
+						// await submission.reply('bebra')
+
+					}
+				} catch (err) {
+					logger.Error(err)
+					interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
+				}
+			}),
+			// Модалка биография
+			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
+				if (!interaction.isModalSubmit()) return
+				if (!interaction.customId.startsWith("join:bio_modal:")) return
+				try {
+					await interaction.deferReply({ephemeral: true})
+					let reqID = interaction.customId.split(":").pop() || ""
+					let request = await app.prisma.request.findUnique({
+						where: {
+							id: reqID
+						}
+					})
+					if (!request) throw new Error("No request found")
+					const biography = interaction.fields.getTextInputValue('join:biography');
+
+					await app.prisma.request.update({
+						where: {
+							id: request.id
+						},
+						data: {
+							biography: biography
+						}
+					})
+					interaction.editReply({embeds: [SuccesfulEmbed("Биография добавлена!")]})
+				} catch (err) {
+					logger.Error(err)
+					interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
+				}
+			}),
+			// Кнопки Админ 
 			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 				if (!interaction.isButton()) return
 				if (!interaction.customId.startsWith('join:admin:')) return
@@ -258,7 +313,7 @@ export default new Module(
 								plan: user.nextPlan,
 							}
 						})
-						await (interaction.message as DMsg).edit({ components: [ButtonActionRow_1(req.id, true, true)] })
+						await (interaction.message as DMsg).edit({ components: [ButtonActionRowAdmin(req.id, true, true)] })
 						await interaction.editReply({ embeds: [SuccesfulEmbed(`Заявка от игрока <@${req.discord}> принята <@${interaction.user.id}>`)] })
 						//await (app.bot.channels.cache.get(interaction.channelId) as ThreadChannel).setAutoArchiveDuration(60)
 						return await app.prisma.request.update({ where: { id: req.id }, data: { locked: false } })
@@ -269,7 +324,7 @@ export default new Module(
 						let message: DMsg<true> | null = null
 						if (messages != null)
 							message = messages.filter((msg: DMsg<true>) => msg.author.id == interaction.user.id).first() || null
-						await (interaction.message as DMsg).edit({ components: [ButtonActionRow_1(req.id, true)] })
+						await (interaction.message as DMsg).edit({ components: [ButtonActionRowAdmin(req.id, true)] })
 						await interaction.editReply({
 							embeds: [
 								new EmbedBuilder()
@@ -311,6 +366,7 @@ export default new Module(
 					interaction.replied || interaction.deferred ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
 				}
 			}),
+			// Команда другая
 			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 				if (!interaction.isCommand() || interaction.commandName != "autoaccept") return
 				try {
@@ -331,6 +387,7 @@ export default new Module(
 					interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
 				}
 			}),
+			// Разблокировка всех заявок после рестарта бота
 			new DiscordEvent("ready", async () => {
 				try {
 					await app.prisma.request.updateMany({ where: { locked: true }, data: { locked: false } })

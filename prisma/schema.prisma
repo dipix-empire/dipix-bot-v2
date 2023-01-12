@@ -72,12 +72,13 @@ model Promo {
 }
 
 model Request {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  message String
-  fields  String
-  discord String
-  user    User[]
-  locked  Boolean
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  fields    String
+  discord   String
+  biography String? @default("")
+  user      User[]
+  locked    Boolean
 }
 
 model Autos {
