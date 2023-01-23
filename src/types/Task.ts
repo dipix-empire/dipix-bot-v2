@@ -9,7 +9,7 @@ export default class Task {
 		return scheduleJob(this.name, rule, async (fireDate: Date) => {
 			logger.Verbose(`Executing task ${this.name}`)
 			try {
-				await this.handler({fireDate})
+				await this.handler({fireDate, logger: logger.getChild(this.name)})
 			} catch (e) {
 				logger.Error(e, `Task ${this.name} thrown an error:`)
 			}

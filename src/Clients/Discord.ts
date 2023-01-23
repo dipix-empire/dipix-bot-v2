@@ -48,6 +48,7 @@ export default class Discord extends Client {
 		private readonly guildId: string
 	) {
 		super(options)
+		super.setMaxListeners(20)
 		this.discordToken = token
 		this.discordRest = new REST({ version: '9' }).setToken(token)
 		this.clientId = clientId

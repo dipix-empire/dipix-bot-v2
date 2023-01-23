@@ -1,23 +1,17 @@
-import { Plan } from "@prisma/client";
+import { Plan, Promo } from "@prisma/client"
+import { PlanDetail } from "../../../types/PlanDetail"
+import plans from "../../../../plans"
 
-export function getName(plan: Plan) {
-	switch (plan) {
-		case "sponsor":
-			return "Спонсорский"
-		case "default":
-			return "Стандартный"
-		default:
-			throw new Error("Unknown plan name.")
-	}
+export function getPlanDetail(plan: Plan): PlanDetail {
+	let res = plans.filter(p => p.plan == plan)[0]
+	if (!res) throw new Error("Undefined plan.")
+	return res
 }
 
-export function getCost(plan: Plan) {
-	switch (plan) {
-		case "sponsor":
-			return 2
-		case "default":
-			return 0.2
-		default:
-			throw new Error("Unknown plan cost.")
-	}
+export function getName(plan: Plan) {
+	return getPlanDetail(plan).name
+}
+
+export function getCost(plan: Plan, promo?: Promo) {
+	return getPlanDetail(plan).cost * (100 - (promo?.discount || 0))/100
 } 
