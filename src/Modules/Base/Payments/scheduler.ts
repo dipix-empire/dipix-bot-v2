@@ -4,7 +4,9 @@ import Task from "../../../types/Task";
 import { TaskHandlerArgs } from "../../../types/TypeAlias";
 import { getCost } from "./plans";
 import QueryString from "qs";
-import { Axios } from "axios";
+import axios, { Axios } from "axios";
+import pingOutBot from "./pingOutBot";
+import updateSubscribtion from "./updateSubscribtion";
 
 export default (app: App, logger: Logger) => {
 	function getDate(date: Date, { gap = 0 }: { gap?: number } = {}) {
@@ -19,9 +21,10 @@ export default (app: App, logger: Logger) => {
 		},
 		baseURL: "http://localhost:4000"
 	})
+	let pingBot = pingOutBot(paymentBot)
 	let subReminder = new Task(
 		"Subscription Reminder",
-		async ({ fireDate }: TaskHandlerArgs) => {
+		async ({ fireDate, logger }: TaskHandlerArgs) => {
 			let expiringSubs = await app.prisma.subscription.findMany({
 				where: {
 					ends: {
@@ -69,7 +72,7 @@ export default (app: App, logger: Logger) => {
 	)
 	let subRenewal = new Task(
 		"Subscription Renewal",
-		async ({ fireDate }: TaskHandlerArgs) => {
+		async ({ fireDate, logger }: TaskHandlerArgs) => {
 			let expiredSubs = (await app.prisma.subscription.findMany({
 				where: {
 					ends: {
@@ -86,7 +89,8 @@ export default (app: App, logger: Logger) => {
 							id: true,
 							nextPlan: true,
 							balance: true,
-						}
+							nextPromo: true,
+						},
 					}
 				}
 			})).map(s => ({
@@ -97,33 +101,7 @@ export default (app: App, logger: Logger) => {
 			}))
 			if (expiredSubs.length == 0) return logger.Log("No subscriptions to update")
 
-			expiredSubs.map(async s => {
-				logger.Log(`Processing subscribe ${s.sid}`)
-				logger.Log(`User: ${s.id} / ${s.discord}`)
-				try {
-					await app.prisma.subscription.update({
-						where: {
-							id: s.sid
-						},
-						data: {
-							status: "expired"
-						}
-					})
-					if (s.proceeded) {
-						await app.prisma.subscription.create({
-							data: {
-								started: s.start,
-								userId: s.id,
-								plan: s.nextPlan,
-								status: "active",
-								ends: new Date(s.start.getTime() + 1000 * 60 * 60 * 24 * 30)
-							}
-						})
-					}
-				} catch (err) {
-					logger.Error(`Error while processing subscription ${s.sid}`)
-				}
-			})
+			expiredSubs.map(updateSubscribtion(app,logger))
 
 			let proceededSubs = expiredSubs.filter(s => s.proceeded)
 			let unproceededSubs = expiredSubs.filter(s => !s.proceeded)
@@ -150,4 +128,5 @@ export default (app: App, logger: Logger) => {
 	)
 	subReminder.schedule('*/30 * * * * *', logger)
 	subRenewal.schedule('*/30 * * * * *', logger)
+	pingBot.schedule('*/5 * * * *', logger)
 }

@@ -9,28 +9,30 @@ datasource db {
 
 model User {
   //id
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
   //personal data
-  nickname      String         @unique
-  age           Int
-  request       Request        @relation(fields: [requestId], references: [id])
-  requestId     String         @unique @db.ObjectId
+  nickname       String         @unique
+  age            Int
+  request        Request        @relation(fields: [requestId], references: [id])
+  requestId      String         @unique @db.ObjectId
   //social links
-  discord       String         @unique
-  telegram      String?
+  discord        String         @unique
+  telegram       String?
   //in-game info
-  profile       Profile[]
-  country       Country?       @relation(fields: [countryId], references: [id])
-  countryId     String?        @db.ObjectId
+  profile        Profile[]
+  country        Country?       @relation(fields: [countryId], references: [id])
+  countryId      String?        @db.ObjectId
+  Organization   Organization?  @relation(fields: [organizationId], references: [id])
+  organizationId String?        @db.ObjectId
   //payments
-  balance       Float          @default(0)
-  donates       Donate[]
-  invitedBy     String?
-  invites       String[]
-  subscriptions Subscription[]
-  nextPlan      Plan           @default(default)
-  nextPromo     Promo?         @relation(fields: [nextPromoId], references: [id])
-  nextPromoId   String?        @db.ObjectId
+  balance        Float          @default(0)
+  donates        Donate[]
+  invitedBy      String?
+  invites        String[]
+  subscriptions  Subscription[]
+  nextPlan       Plan           @default(default)
+  nextPromo      Promo?         @relation(fields: [nextPromoId], references: [id])
+  nextPromoId    String?        @db.ObjectId
 }
 
 model Subscription {
@@ -55,7 +57,11 @@ model Donate {
 
 enum Plan {
   default
+  default4
+  default12
   sponsor
+  sponsor2
+  sponsor12
 }
 
 enum SubscriptionStatus {
@@ -65,7 +71,11 @@ enum SubscriptionStatus {
 
 model Promo {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  percentage   Int
+  discount     Int
+  name         String         @unique
+  lifetime     Int
+  count        Int
+  public       Boolean        @default(true)
   whoAdded     String
   user         User[]
   Subscription Subscription[]
@@ -104,4 +114,12 @@ model Country {
   police    String[]
   mayor     String[]
   judge     String[]
+}
+
+model Organization {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  discord String @unique
+  name    String @unique
+  owner   String
+  members User[]
 }

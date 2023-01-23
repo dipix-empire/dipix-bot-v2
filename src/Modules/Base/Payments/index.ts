@@ -3,7 +3,9 @@ import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
 import Logger from "../../../types/Logger";
 import Module from "../../../types/Module";
 import donate from "./donate";
+import manage from "./manage";
 import profile from "./profile";
+import promoManager from "./promo";
 import scheduler from "./scheduler";
 
 
@@ -13,6 +15,11 @@ export default new Module(
 
 		scheduler(app, logger)
 
-		return [profile(app, logger), donate(app, logger)]
+		return [
+			profile(app, logger), 
+			donate(app, logger),
+			...manage(app, logger),
+			...promoManager(app, logger)
+		]
 	}
 )

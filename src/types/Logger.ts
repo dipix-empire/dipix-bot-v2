@@ -30,13 +30,14 @@ export default class Logger {
 		console.log(this.template("DEBUG", msg))
 		if (data.length > 0) console.log(...data)
 	}
-
+	public getChild(name: string) {
+		return new Logger(`${this.source}/${name}`, this.level,"module")
+	}
 	constructor(
 		public readonly source: string,
 		public readonly level: logLevel,
 		public readonly type?: "client" | "module"
-	) {
-	}
+	) { }
 }
 export enum logLevel {
 	ERROR = 0,
