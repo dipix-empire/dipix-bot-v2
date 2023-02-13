@@ -190,7 +190,6 @@ export default new Module(
           })
 
           const EmbedTitle = ['Ваша заявка на присоединение', `Заявка: ${interaction.user.username}`]
-
           if (interaction.customId == `join:info_modal`) {
             interaction.reply({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[0], interaction)], components: [ButtonActionRowUser(request.id)], ephemeral: true })
             userBuffer[`modal:${request.id}`] = interaction
@@ -219,8 +218,8 @@ export default new Module(
 
           if (interaction.customId.startsWith(`join:user:send:`)) {
             await interaction.reply({embeds: [SuccesfulEmbed("Заявка отправлена!")], ephemeral: true })
-            await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, true, true)] })
-            await interaction.channel?.send({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[1], interaction)], components: [ButtonActionRowAdmin(request.id)] })
+            await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, true, true)] }),
+            ((app.bot.channels.cache.get(app.config.bot.channels.manageChannel)) as TextChannel).send({ content: `<${app.config.bot.roles.administration}>, поступила новая заявка.`, embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[1], interaction)], components: [ButtonActionRowAdmin(request.id)] })
           }
           else if (interaction.customId.startsWith(`join:user:rules:`)) {
             await interaction.reply({
@@ -250,22 +249,11 @@ export default new Module(
         try {
           await interaction.deferReply({ephemeral: true})
           let reqID = interaction.customId.split(":").pop() || ""
-          let request = await app.prisma.request.findUnique({
-            where: {
-              id: reqID
-            }
-          })
+          let request = await app.prisma.request.findUnique({ where: { id: reqID } })
           if (!request) throw new Error("No request found")
           const biography = interaction.fields.getTextInputValue('join:biography');
 
-          await app.prisma.request.update({
-            where: {
-              id: request.id
-            },
-            data: {
-              biography: biography
-            }
-          })
+          await app.prisma.request.update({ where: { id: request.id }, data: { biography: biography } })
           interaction.editReply({embeds: [SuccesfulEmbed("Биография добавлена!")]})
         } catch (err) {
           logger.Error(err)
