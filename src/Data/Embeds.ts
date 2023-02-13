@@ -1,5 +1,5 @@
 import { Colors, EmbedBuilder } from "discord.js";
-export const footer = {text: `DiPix Bot © Philainel, 2022`}
+export const footer = {text: `DiPix Bot © Philainel, 2022-2023`}
 export const ErrorEmbed = (comment = "Произошла непредвиденная ошибка.") => new EmbedBuilder()
 	.setColor('#c62828')
 	.setTitle('Ошибка!')

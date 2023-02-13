@@ -11,9 +11,12 @@ import MinecraftEvent from "../../types/ModuleEvent/MinecraftEvent";
 export default new Module(
 	"chat", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		return [ 
-			new DiscordEvent("messageCreate", (msg: Message) => {
+			new DiscordEvent("messageCreate", async (msg: Message) => {
 				if (msg.channel.id != app.config.bot.channels.chatIntagration) return
-				
+				let user = await app.prisma.user.findUnique({where: {id: msg.author.id}, select: {nickname: true}})
+				if (!user) return logger.Error(new Error("Undefined user."))
+				if (!msg.content) return logger.Debug(`Ignoring empty message content `)
+				app.minecraft.sendToConsole(`tellraw @a ${app.config.modules.chat.minecraftSendPattern(user.nickname, msg.content)}`)
 			}),
 			new MinecraftEvent("PlayerChat", async (ctx: any) => {
 				try {

@@ -34,7 +34,7 @@ export default {
 	},
 	modules: {
 		chat: {
-			minecraftSendPattern: (user, message) => `[DC] ${user} >> ${message}`
+			minecraftSendPattern: (user, message) => `{"text":"[DC] ${user} >> ${message}}"`
 		},
 		profiles: {
 			skinDirectory: process.cwd() + '/images/skins'

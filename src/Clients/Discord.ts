@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { Client, ClientOptions } from "discord.js";
+import { Client, ClientOptions, Guild } from "discord.js";
 import App from "../App";
 import Logger from "../types/Logger";
 import { UploadCommandType } from "../types/TypeAlias";
@@ -12,7 +12,13 @@ export default class Discord extends Client {
 	private readonly discordRest: REST
 	private readonly clientId: string
 	private readonly logger: Logger
+	private mainGuildCache: Guild | null | undefined
 	private commands: { main: Array<UploadCommandType>, shared: Array<UploadCommandType> } = { main: [], shared: [] }
+	public async mainGuild() {
+		if (!this.mainGuildCache)
+			this.mainGuildCache = await super.guilds.fetch(this.guildId)
+		return this.mainGuildCache
+	}
 	public start(app: App) {
 		super.once('ready', async () => {
 			this.logger.Log(`Started Discord client`)

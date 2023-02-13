@@ -106,20 +106,26 @@ model Profile {
 }
 
 model Country {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  discord   String   @unique
-  name      String   @unique
-  residents User[]
-  ruler     String
-  police    String[]
-  mayor     String[]
-  judge     String[]
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  discord           String @unique
+  name              String @unique
+  rezidents         User[]
+  rulerId           String
+  citizenRoleId     String
+  policeRoleId      String
+  mayorRoleId       String
+  judgeRoleId       String
+  citizenMainRoleId String
+  // policeMainRoleId  String
+  // mayorMainRoleId   String
+  // judgeMainRoleId   String
 }
 
 model Organization {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  discord String @unique
-  name    String @unique
-  owner   String
-  members User[]
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  discord      String @unique
+  name         String @unique
+  ownerId      String
+  members      User[]
+  memberRoleId String
 }
