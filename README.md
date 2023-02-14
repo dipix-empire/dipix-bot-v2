@@ -2,14 +2,14 @@
 
 This is a discord bot created for DiPix.
 
-## It handles/Supposed to
+## Features
 
-- Players registration.
-- Player self-profile control.
-- Subscription updates.
-- Access management.
-- Server logs.
-===
-- Discord-Minecraft chat linking.
-- Offline mode skin management.
-- Side servers integration.
+- [ ] Player registration.
+- [ ] Player profile control.
+- [ ] DiPix Subscription notifications.
+- [ ] Access management.
+- [ ] Server logs.  
+===  
+- [ ] Discord-Minecraft account linking.
+- [ ] Offline mode skin management.
+- [ ] Side servers integration.
