@@ -1,7 +1,7 @@
 import { Message, EmbedBuilder, TextChannel } from "discord.js";
 import { EventEmitter } from "stream";
 import App from "../../App";
-import { newLineData } from "../../Clients/Minecraft";
+import { newLineData } from "../../Clients/LegacyMinecraft";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
 import Module from "../../types/Module";

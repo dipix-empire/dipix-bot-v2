@@ -6,14 +6,14 @@ import Module from "./types/Module"
 import DiscordEvent from "./types/ModuleEvent/DiscordEvent"
 import MinecraftEvent from "./types/ModuleEvent/MinecraftEvent"
 import Secrets from "./types/Secrets"
-import Minecraft from "./Clients/Minecraft"
+import LegacyMinecraft from "./Clients/LegacyMinecraft"
 import { PrismaClient } from "@prisma/client"
 import Logger from "./types/Logger"
 import REST from "./Clients/Rest"
 
 export default class App {
 	public readonly bot: Discord
-	public readonly minecraft: Minecraft
+	public readonly minecraft: LegacyMinecraft
 	public readonly rest: REST
 	public readonly prisma: PrismaClient
 	public readonly config: Config
@@ -55,7 +55,7 @@ export default class App {
 			new Logger("Bot", config.logLevel, "client"),
 			config.bot.guildId
 		)
-		this.minecraft = new Minecraft(
+		this.minecraft = new LegacyMinecraft(
 			secrets.servertap_token,
 			config.minecraft_server_api.web.ws,
 			config.minecraft_server_api.web.http,

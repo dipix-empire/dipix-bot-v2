@@ -4,7 +4,7 @@ import WebSocket from "ws"
 import express, {Request, Response} from "express"
 import Logger from "../types/Logger";
 
-export default class MinecraftServerAPI extends EventEmitter {
+export default class LegacyMinecraftServerAPI extends EventEmitter {
 	private readonly token: string
 	private readonly wsuri: string
 	private readonly httpuri: string
