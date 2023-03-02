@@ -19,7 +19,7 @@ export default class Logger {
 	public Warn(msg: string) {
 		if (this.level < 1) return
 		console.log(this.template("WARN", msg))
-		this.sendWebhook("VERB", msg)
+		this.sendWebhook("WARN", msg)
 	}
 	public Log(msg: string) {
 		if (this.level < 2) return
