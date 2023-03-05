@@ -13,6 +13,13 @@ import axios from "axios"
 import { v4 as uuid} from "uuid"
 import { Request, Response } from "express"
 
+/**
+ * ! THIS IS A DEPRECATED MODULE
+ * Since this module not using it actually turned off from loading to app
+ * This module might break behaviour of the app
+ * It even might be broken
+ */
+
 export default new Module(
 	"profiles",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {

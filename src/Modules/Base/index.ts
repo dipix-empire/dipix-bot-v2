@@ -11,6 +11,6 @@ export default [
 	// Console,
 	Join,
 	Conversation,
-	// Profiles,
+	// Profiles, //! Deprecated module
 	Payments
 ]
