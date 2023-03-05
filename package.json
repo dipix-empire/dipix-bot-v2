@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "nodemon index.ts",
+    "build": "./buildProto.sh gen && tsc",
+    "dev": "./buildProto.sh gen && nodemon index.ts",
     "prisma": "prisma format && prisma db push && prisma generate",
     "db": "mongod --replSet rs0 --dbpath ./dist/db",
     "dev-minecraft": "cd dist/minecraft && ./start.sh",
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Philainel/dipix-bot-v2#readme",
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/google-protobuf": "^3.15.6",
     "@types/node": "^17.0.41",
     "@types/node-schedule": "^2.1.0",
     "@types/uuid": "^8.3.4",

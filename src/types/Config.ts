@@ -20,8 +20,11 @@ export default interface Config {
 			ws: string
 			http: string,
 			port: number
-		}
+		},
 	},
+	minecraft: {
+		uri: string
+	}
 	rest: {
 		port: number
 	},

@@ -17,6 +17,7 @@ export default class Discord extends Client {
 	public async mainGuild() {
 		if (!this.mainGuildCache)
 			this.mainGuildCache = await super.guilds.fetch(this.guildId)
+		setTimeout(() => { delete this.mainGuildCache }, 1 * 60 * 1000)
 		return this.mainGuildCache
 	}
 	public start(app: App) {
