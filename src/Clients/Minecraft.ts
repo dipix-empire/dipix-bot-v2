@@ -14,18 +14,33 @@ export default class Minecraft {
 
 	public async getPlayers() {
 		return new Promise<PlayerList>((resolve, reject) => {
-			// if (!this.connected) return reject(new Error("No connection available."))
 			this.statsClient.getPlayers(new Empty(), (err: any, response: PlayerList) => {
 				if (err) return reject(err)
 				resolve(response)
 			})
 		})
 	}
-	public sendChatMessage(sender: string, content: string) {
-
+	public async sendChatMessage(sender: string, content: string) {
+		return new Promise<Empty>((resolve, reject) => {
+			this.chatMessageClient.sendMessage(
+				new ChatMessage().setContent(content).setSender(sender),
+				(err: any, response: Empty) => {
+					if (err) return reject(err)
+					resolve(response)
+				}
+			)
+		})
 	}
-	public sendCommand(cmd: string) {
-
+	public async sendCommand(cmd: string) {
+		return new Promise<Empty>((resolve, reject) => {
+			this.chatMessageClient.sendCommand(
+				new ConsoleCommand().setCmd(cmd),
+				(err: any, response: Empty) => {
+					if (err) return reject(err)
+					resolve(response)
+				}
+			)
+		})
 	}
 
 	constructor(

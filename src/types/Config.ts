@@ -9,7 +9,8 @@ export default interface Config {
 		clientId: string,
 		channels: {
 			chatIntagration: string,
-			manageChannel: string
+			manageChannel: string,
+			consoleIntegration: string
 		},
 		roles: {
 			administration: string

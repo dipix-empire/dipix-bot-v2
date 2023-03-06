@@ -42,8 +42,8 @@ export default class Logger {
 		console.log(this.template("DEBUG", msg))
 		if (data.length > 0) console.log(...data)
 	}
-	public getChild(name: string) {
-		return new Logger(`${this.source}/${name}`, this.level, "module")
+	public getChild(name: string, type: loggerTypes = "module") {
+		return new Logger(`${this.source}/${name}`, this.level, type)
 	}
 	private sendWebhook(level: string, message: string) {
 		Logger.webhook.send({
@@ -76,7 +76,7 @@ export default class Logger {
 	constructor(
 		public readonly source: string,
 		public readonly level: logLevel,
-		public readonly type?: "client" | "module",
+		public readonly type?: loggerTypes,
 	) { }
 }
 export enum logLevel {
@@ -86,3 +86,4 @@ export enum logLevel {
 	VERBOSE = 3,
 	DEBUG = 4
 }
+export type loggerTypes = "client" | "module" | "event" | "task"

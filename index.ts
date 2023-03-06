@@ -3,4 +3,4 @@ import config from "./config"
 import secrets from "./secrets";
 import Modules from "./src/Modules";
 
-(async () => await new App(config, secrets, []).start())()
+(async () => await new App(config, secrets, Modules).start())()

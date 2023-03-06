@@ -29,13 +29,13 @@ export default class App {
 			(await m.prepare(this, new AppBusModuleComponent(this.appBusMain, m.name, logger), logger)).forEach(e => {
 				switch(e.type) {
 					case "discord":
-						let discordEvent = e as DiscordEvent
+						let discordEvent = e as DiscordEvent<any>
 						this.bot.on(discordEvent.event, discordEvent.listener)
 						break
-					case "servertap":
-						let serverTapEvent = e as MinecraftEvent
-						logger.Warn("Event binding failed! (servertap)")
-						// this.minecraft.on(serverTapEvent.event, serverTapEvent.listener)
+					case "minecraft":
+						let minecraftEvent = e as MinecraftEvent
+						logger.Warn("Event binding deprecated! (minecraft)")
+						// this.minecraft.on(minecraftEvent.event, minecraftEvent.listener)
 						break
 
 				}
@@ -43,7 +43,6 @@ export default class App {
 		})
 		if (this.modules.length == 0) this.logger.Warn("No modules were provided. Check index.ts or config.ts")
 		await this.prisma.$connect()
-		//!TURN ON THIS!
 		this.bot.start(this)
 		this.rest.start()
 		// this.minecraft.start()
