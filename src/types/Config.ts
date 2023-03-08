@@ -24,7 +24,8 @@ export default interface Config {
 		},
 	},
 	minecraft: {
-		uri: string
+		uri: string,
+		port: number,
 	}
 	rest: {
 		port: number

@@ -16,7 +16,7 @@ export default class Discord extends Client {
 	private commands: { main: Array<UploadCommandType>, shared: Array<UploadCommandType> } = { main: [], shared: [] }
 	public async mainGuild() {
 		if (!this.mainGuildCache)
-			this.mainGuildCache = await super.guilds.fetch(this.guildId)
+			this.mainGuildCache = await this.guilds.fetch(this.guildId)
 		setTimeout(() => { delete this.mainGuildCache }, 1 * 60 * 1000)
 		return this.mainGuildCache
 	}

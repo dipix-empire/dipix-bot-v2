@@ -1,4 +1,4 @@
-import Discord from "./Clients/Discord"	
+import Discord from "./Clients/Discord"
 import AppBusMain from "./types/AppBus/Main"
 import AppBusModuleComponent from "./types/AppBus/ModuleComponent"
 import Config from "./types/Config"
@@ -22,34 +22,46 @@ export default class App {
 	private appBusMain: AppBusMain
 	private readonly modules: Module[]
 
-	async start() {
+	public async start() {
 		this.modules.forEach(async m => {
-			let logger = new Logger(m.name, this.config.logLevel, "module")
-			logger.Verbose(`Enabling module '${m.name}'`);
+			let eCount = 0
+			let logger = new Logger(m.name, this.config.logLevel, "module");
 			(await m.prepare(this, new AppBusModuleComponent(this.appBusMain, m.name, logger), logger)).forEach(e => {
-				switch(e.type) {
+				switch (e.type) {
 					case "discord":
 						let discordEvent = e as DiscordEvent<any>
 						this.bot.on(discordEvent.event, discordEvent.listener)
 						break
 					case "minecraft":
-						let minecraftEvent = e as MinecraftEvent
-						logger.Warn("Event binding deprecated! (minecraft)")
-						// this.minecraft.on(minecraftEvent.event, minecraftEvent.listener)
+						let minecraftEvent = e as MinecraftEvent<any>
+						this.minecraft.on(minecraftEvent.event, minecraftEvent.listener)
 						break
-
+					default:
+						eCount--
+						break
 				}
+				eCount++
 			})
+			logger.Log(`Enabled module '${m.name}' with ${eCount} events.`)
+
 		})
 		if (this.modules.length == 0) this.logger.Warn("No modules were provided. Check index.ts or config.ts")
 		await this.prisma.$connect()
 		this.bot.start(this)
 		this.rest.start()
-		// this.minecraft.start()
+		this.minecraft.start()
+		this.logger.Log("App started.")
+		return this
 	}
-	
+
+	public async stop() {
+		this.logger.Log("Stopping the App...")
+		await this.minecraft.stop()
+	}
+
 	constructor(config: Config, secrets: Secrets, modules: Module[]) {
 		this.logger = new Logger("app", config.logLevel)
+		this.logger.Log("Building app component...")
 		this.bot = new Discord(
 			secrets.discord_token,
 			config.bot.clientId,
@@ -59,14 +71,7 @@ export default class App {
 			new Logger("Bot", config.logLevel, "client"),
 			config.bot.guildId
 		)
-		// this.minecraft = new LegacyMinecraft(
-		// 	secrets.servertap_token,
-		// 	config.minecraft_server_api.web.ws,
-		// 	config.minecraft_server_api.web.http,
-		// 	config.minecraft_server_api.web.port,
-		// 	new Logger("Minecraft", config.logLevel, "client")
-		// )
-		this.minecraft = new Minecraft(config.minecraft.uri, new Logger("Minecraft", config.logLevel, "client"))
+		this.minecraft = new Minecraft(config.minecraft.uri, config.minecraft.port, new Logger("Minecraft", config.logLevel, "client"))
 		this.rest = new REST(config.rest.port, new Logger("Rest", config.logLevel, "client"))
 		this.prisma = new PrismaClient()
 		this.appBusMain = new AppBusMain(this.logger)

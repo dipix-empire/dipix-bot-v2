@@ -1,8 +1,8 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, PartialGuildMember } from "discord.js";
 import { CRoles } from "./resolveRoles";
 import App from "../../../App";
 
-export default (app: App, newMember: GuildMember, oldMember: GuildMember, roles: CRoles): { add?: UpdateState[], remove?: UpdateState[] } => {
+export default (app: App, newMember: GuildMember, oldMember: GuildMember | PartialGuildMember, roles: CRoles): { add?: UpdateState[], remove?: UpdateState[] } => {
 	let add: UpdateState[] = [], remove: UpdateState[] = []
 	//! Complex and horrible checks
 	newMember.roles.cache.has(roles.citizen.id)	&& !oldMember.roles.cache.has(roles.citizen.id)	&& add.push("citizen")

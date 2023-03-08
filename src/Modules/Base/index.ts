@@ -7,8 +7,8 @@ import Payments from "./Payments";
 
 //TODO: MIGRATE PROFILES,
 export default [
-	// Chat,
-	// Console,
+	Chat,
+	Console,
 	Join,
 	Conversation,
 	// Profiles, //! Deprecated module

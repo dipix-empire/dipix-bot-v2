@@ -301,7 +301,7 @@ export default new Module(
           }
           else if (action == "reject") {
             await app.prisma.request.delete({ where: { id: req.id } })
-            let messages: Collection<string, DMsg<true>> | null = (await interaction.channel?.messages.fetch({ limit: 10 })) as Collection<string, DMsg<true>>
+            let messages: Collection<string, DMsg<true>> | null = (await (interaction.channel as TextChannel)?.messages.fetch({ limit: 10 })) as Collection<string, DMsg<true>>
             let message: DMsg<true> | null = null
             if (messages != null)
               message = messages.filter((msg: DMsg<true>) => msg.author.id == interaction.user.id).first() || null

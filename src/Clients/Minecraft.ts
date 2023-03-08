@@ -1,121 +1,139 @@
 import { EventEmitter } from "events";
 import Logger from "../types/Logger";
-import { ChatMessageServiceClient, StatsClient } from "../generated/proto/dipix-bot_grpc_pb"
-import { ClientDuplexStream, ServerDuplexStream, credentials } from "@grpc/grpc-js";
+import { Server, ServerCredentials, ServerDuplexStream, credentials } from "@grpc/grpc-js";
 import { ChatMessage, ConsoleCommand, ConsoleLog, Empty, PlayerList } from "../generated/proto/dipix-bot_pb";
-import Task from "../types/Task";
-import { TaskHandlerArgs } from "../types/TypeAlias";
-import MinecraftEvent from "../types/ModuleEvent/MinecraftEvent";
+import { BotToMinecraftClient, BotToMinecraftService, IMinecraftToBotServer, MinecraftToBotService } from "../generated/proto/dipix-bot_grpc_pb";
 
-export default class Minecraft {
-	private pingTask: Task | undefined
-	public readonly statsClient: StatsClient
-	public readonly chatMessageClient: ChatMessageServiceClient
+export default class Minecraft extends EventEmitter {
+	constructor(
+		address: string,
+		private readonly port: number,
+		private readonly logger: Logger
+	) {
+		super()
+		logger.Log(`Building gRPC stubs to ${address}`)
+		this.client = new BotToMinecraftClient(address, credentials.createInsecure())
+		this.server = new Server()
+		this.server.addService(MinecraftToBotService, this.serverImpl)
+		logger.Debug("Build gRPC server.", this.server)
+	}
+
+	private readonly client: BotToMinecraftClient
+	private readonly server: Server
+	private readonly localee: MinecraftLocalEE = new MinecraftLocalEE()
 
 	public async getPlayers() {
 		return new Promise<PlayerList>((resolve, reject) => {
-			this.statsClient.getPlayers(new Empty(), (err: any, response: PlayerList) => {
+			this.client.getPlayers(new Empty(), (err: any, response: PlayerList) => {
 				if (err) return reject(err)
 				resolve(response)
 			})
 		})
 	}
-	public async sendChatMessage(sender: string, content: string) {
+	public async reconnect() {
 		return new Promise<Empty>((resolve, reject) => {
-			this.chatMessageClient.sendMessage(
-				new ChatMessage().setContent(content).setSender(sender),
-				(err: any, response: Empty) => {
-					if (err) return reject(err)
-					resolve(response)
-				}
-			)
+			this.client.reconnect(new Empty(), (err: any, response: Empty) => {
+				if (err) return reject(err)
+				resolve(response)
+			})
 		})
 	}
-	public async sendCommand(cmd: string) {
-		return new Promise<Empty>((resolve, reject) => {
-			this.chatMessageClient.sendCommand(
-				new ConsoleCommand().setCmd(cmd),
-				(err: any, response: Empty) => {
-					if (err) return reject(err)
-					resolve(response)
-				}
-			)
-		})
+	public sendChatMessage(sender: string, content: string) {
+		return this.localee.emit("msg", content, sender)
+	}
+	public sendCommand(cmd: string) {
+		this.localee.emit("cmd", cmd)
 	}
 
-	constructor(
-		address: string,
-		private readonly logger: Logger
-	) {
-		this.statsClient = new StatsClient(address, credentials.createInsecure())
-		this.chatMessageClient = new ChatMessageServiceClient(address, credentials.createInsecure())
+	public start() {
+		this.server.bindAsync(`0.0.0.0:${this.port}`, ServerCredentials.createInsecure(), (err: Error | null, port: number) => {
+			this.server.start()
+			this.logger.Log(`gRPC server started on 0.0.0.0:${port}`)
+			this.reconnect().catch((err: Error | unknown) => {
+				this.logger.VerboseError(err, "Error while send reconnect request to server. Is it started up?")
+				this.logger.Error(new Error("Can't connect minecraft server."))
+			})
+		})
+	}
+	public async stop() {
+		this.logger.Log("Shutting down gRPC server...")
+		return new Promise<void>((resolve, reject) => {
+			this.server.tryShutdown((err: Error | unknown) => {
+				if (err) return reject(err)
+				resolve()
+			})
+		})
+	}
+	
+	private serverImpl: IMinecraftToBotServer = {
+		consolePool: (call: ServerDuplexStream<ConsoleLog, ConsoleCommand>) => {
+			this.logger.Verbose(`Connected ConsolePool duplex. Peer: ${call.getPeer()}`)
+			call.on("data", (data: ConsoleLog) => {
+				this.emit("log", { raw: data.getRaw() })
+			})
+			let cmdHandler = async (cmd: string) => {
+				call.write(new ConsoleCommand().setCmd(cmd))
+			}
+			this.localee.on("cmd", cmdHandler)
+			call.on("end", () => this.localee.off("cmd", cmdHandler))
+		},
+		messagePool: (call: ServerDuplexStream<ChatMessage, ChatMessage>) => {
+			this.logger.Verbose(`Connected MessagePool duplex. Peer: ${call.getPeer()}`)
+			call.on("data", (data: ChatMessage) => {
+				this.emit("msg", { content: data.getContent(), sender: data.getSender() })
+			})
+			const msgHandler = async (content: string, sender: string) => {
+				call.write(new ChatMessage().setSender(sender).setContent(content));
+			};
+			this.localee.on("msg", msgHandler)
+			call.on("end", () => this.localee.off("msg", msgHandler))
+		}
+	}
 
-		// this.pingTask = new Task("PingTask", ({}: TaskHandlerArgs) => {
-		// 	if (!this.client) return this.initiate()
-		// 	this.client.statsClient.pingServer(new Empty(), (err: Error, response: Empty) => {
-		// 		if (err) return this.initiate()
-		// 	})
-		// })
+	public override on<T extends keyof MinecraftEventTypes>(event: T, listener: (...data: MinecraftEventTypes[T]) => any) {
+		super.on(event, listener as any)
+		return this
+	}
+	public override once<T extends keyof MinecraftEventTypes>(event: T, listener: (...data: MinecraftEventTypes[T]) => any) {
+		super.once(event, listener as any)
+		return this
+	}
+	public override off<T extends keyof MinecraftEventTypes>(event: T, listener: (...data: MinecraftEventTypes[T]) => any) {
+		super.off(event, listener as any)
+		return this
+	}
+	public override emit<T extends keyof MinecraftEventTypes>(event: T, ...data: MinecraftEventTypes[T]) {
+		super.emit(event, ...data)
+		return !!super.listenerCount(event)
 	}
 }
 
-// class MinecraftBidiStreamWatcher extends EventEmitter {
-// 	private status: ConnectionStatus = ConnectionStatus.connected
-// 	public sendMessage(msg: ChatMessage) {
-// 		this.chatStream.write(msg)
-// 	}
-// 	public sendCommand(cmd: ConsoleCommand) {
-// 		this.consoleStream.write(cmd)
-// 	}
-
-// 	private emitClose() {
-// 		this.logger.Debug("Connection closed...")
-// 		this.status = ConnectionStatus.disconnected
-// 		this.emit("disconnect")
-// 	}
-// 	private emitError(err: Error | unknown) {
-// 		this.logger.Debug("Connection thrown an error...")
-// 		this.status = ConnectionStatus.disconnected
-// 		this.emit("err", err)
-// 		this.emit("disconnect")
-// 	}
-
-// 	private onMessage(msg: ChatMessage) {
-// 		this.emit("chat", { sender: msg.getSender(), content: msg.getContent() })
-// 	}
-// 	private onLog(log: ConsoleLog) {
-// 		this.emit("log", { raw: log.getContent() })
-// 	}
-
-// 	public override on<T extends keyof MinecraftWatcherEventTypes>(key: T, listener: (...args: MinecraftWatcherEventTypes[T]) => any) {
-// 		super.on(key, listener as any)
-// 		return this
-// 	}
-// 	public override once<T extends keyof MinecraftWatcherEventTypes>(key: T, listener: (...args: MinecraftWatcherEventTypes[T]) => any) {
-// 		super.on(key, listener as any)
-// 		return this
-// 	}
-// 	public override off<T extends keyof MinecraftWatcherEventTypes>(key: T, listener: (...args: MinecraftWatcherEventTypes[T]) => any) {
-// 		super.off(key, listener as any)
-// 		return this
-// 	}
-// 	public override emit<T extends keyof MinecraftWatcherEventTypes>(key: T, ...args: MinecraftWatcherEventTypes[T]) {
-// 		super.emit(key, ...args)
-// 		return !!super.listenerCount(key)
-// 	}
-
-// 	constructor(
-// 		private readonly chatStream: ClientDuplexStream<ChatMessage, ChatMessage>,
-// 		private readonly consoleStream: ClientDuplexStream<ConsoleCommand, ConsoleLog>,
-// 		private readonly logger: Logger
-// 	) {
-// 		super()
-// 		chatStream.on("close", this.emitClose)
-// 		consoleStream.on("close", this.emitClose)
-// 		chatStream.on("error", this.emitError)
-// 		consoleStream.on("error", this.emitError)
-
-// 		chatStream.on("data", this.onMessage)
-// 		consoleStream.on("data", this.onLog)
-// 	}
-// }
+export type MinecraftEventTypes = {
+	"log": [log: { raw: string }],
+	"msg": [msg: { sender: string, content: string }]
+}
+type MinecraftLocalEETypes = {
+	"msg": [sender: string, content: string],
+	"cmd": [cmd: string]
+}
+class MinecraftLocalEE extends EventEmitter {
+	public override on<T extends keyof MinecraftLocalEETypes>(event: T, listener: (...data: MinecraftLocalEETypes[T]) => any) {
+		super.on(event, listener as any)
+		return this
+	}
+	public override once<T extends keyof MinecraftLocalEETypes>(event: T, listener: (...data: MinecraftLocalEETypes[T]) => any) {
+		super.once(event, listener as any)
+		return this
+	}
+	public override off<T extends keyof MinecraftLocalEETypes>(event: T, listener: (...data: MinecraftLocalEETypes[T]) => any) {
+		super.off(event, listener as any)
+		return this
+	}
+	public override emit<T extends keyof MinecraftLocalEETypes>(event: T, ...data: MinecraftLocalEETypes[T]) {
+		super.emit(event, ...data)
+		return !!super.listenerCount(event)
+	}
+	constructor() {
+		super()
+	}
+}

@@ -52,12 +52,12 @@ export default class Logger {
 					.setTitle(`${level.toUpperCase()} ${this.type ? `${this.type[0].toUpperCase()}/` : ""}${this.source.toUpperCase()}`)
 					.setDescription(message)
 					.setTimestamp(Date.now())
-					.setColor(this.getWebhookColor(level))
+					.setColor(Logger.getWebhookColor(level))
 					.setFooter(footer)
 			]
 		}).catch(console.error)
 	}
-	private getWebhookColor(level: string) {
+	private static getWebhookColor(level: string) {
 		switch (level) {
 			case "ERRO":
 				return Colors.Red

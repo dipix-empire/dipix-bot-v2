@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, PartialGuildMember } from "discord.js";
 import App from "../../../App";
 import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
 import Logger from "../../../types/Logger";
@@ -11,7 +11,7 @@ export default new Module(
 	"CountryLinking",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		return [
-			new DiscordEvent("guildMemberUpdate", async (oldMember: GuildMember, newMember: GuildMember) => {
+			new DiscordEvent("guildMemberUpdate", async (oldMember: GuildMember | PartialGuildMember, newMember: GuildMember) => {
 				try {
 					let country = await app.prisma.country.findUnique({ where: { discord: newMember.guild.id } })
 					if (!country) return
