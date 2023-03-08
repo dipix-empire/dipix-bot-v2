@@ -126,7 +126,7 @@ export default (app: App, logger: Logger) => {
 					}))).data)
 		}
 	)
-	subReminder.schedule('*/30 * * * * *', logger)
-	subRenewal.schedule('*/30 * * * * *', logger)
-	pingBot.schedule('*/5 * * * *', logger)
+	subReminder.schedule('* * */10 * * *', logger)
+	subRenewal.schedule('* * */10 * * *', logger)
+	pingBot.schedule('* */10 * * *', logger)
 }
