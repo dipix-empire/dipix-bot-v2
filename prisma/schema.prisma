@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  //id
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  //personal data
+  nickname       String         @unique
+  age            Int
+  request        Request        @relation(fields: [requestId], references: [id])
+  requestId      String         @unique @db.ObjectId
+  //social links
+  discord        String         @unique
+  telegram       String?
+  //in-game info
+  profile        Profile[]
+  country        Country?       @relation(fields: [countryId], references: [id])
+  countryId      String?        @db.ObjectId
+  Organization   Organization?  @relation(fields: [organizationId], references: [id])
+  organizationId String?        @db.ObjectId
+  //payments
+  balance        Float          @default(0)
+  donates        Donate[]
+  invitedBy      String?
+  invites        String[]
+  subscriptions  Subscription[]
+  nextPlan       Plan           @default(default)
+  nextPromo      Promo?         @relation(fields: [nextPromoId], references: [id])
+  nextPromoId    String?        @db.ObjectId
+}
+
+model Subscription {
+  id      String             @id @default(auto()) @map("_id") @db.ObjectId
+  user    User               @relation(fields: [userId], references: [id])
+  userId  String             @db.ObjectId
+  status  SubscriptionStatus
+  started DateTime
+  ends    DateTime
+  plan    Plan
+  promo   Promo?             @relation(fields: [promoId], references: [id])
+  promoId String?            @db.ObjectId
+}
+
+model Donate {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @db.ObjectId
+  timestamp DateTime
+  value     Float
+}
+
+enum Plan {
+  default
+  default4
+  default12
+  sponsor
+  sponsor2
+  sponsor12
+}
+
+enum SubscriptionStatus {
+  active
+  expired
+}
+
+model Promo {
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  discount     Int
+  name         String         @unique
+  lifetime     Int
+  count        Int
+  public       Boolean        @default(true)
+  whoAdded     String
+  user         User[]
+  Subscription Subscription[]
+}
+
+model Request {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  message   String
+  fields    String
+  discord   String
+  biography String? @default("")
+  user      User[]
+  locked    Boolean
+}
+
+model Autos {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  discord     String
+  whoAccepted String
+}
+
+model Profile {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  number Int
+  file   String
+  userId String @db.ObjectId
+}
+
+model Country {
+  id                String @id @default(auto()) @map("_id") @db.ObjectId
+  discord           String @unique
+  name              String @unique
+  rezidents         User[]
+  rulerId           String
+  citizenRoleId     String
+  policeRoleId      String
+  mayorRoleId       String
+  judgeRoleId       String
+  citizenMainRoleId String
+  // policeMainRoleId  String
+  // mayorMainRoleId   String
+  // judgeMainRoleId   String
+}
+
+model Organization {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  discord      String @unique
+  name         String @unique
+  ownerId      String
+  members      User[]
+  memberRoleId String
+}

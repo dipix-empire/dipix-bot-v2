@@ -1,0 +1,3 @@
+[submodule "src/proto"]
+	path = src/proto
+	url = git@github.com:DiPix-Empire/protobufs.git
