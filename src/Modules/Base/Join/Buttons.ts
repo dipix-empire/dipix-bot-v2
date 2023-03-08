@@ -6,7 +6,7 @@ export const ButtonActionRowAdmin = (reqID: string, disabled = false, success = 
 			new ButtonBuilder()
 				.setCustomId(`join:admin:accept:${reqID}`)
 				.setLabel('Принять')
-				.setStyle(success ? ButtonStyle.Success : ButtonStyle.Danger)
+				.setStyle(success ? ButtonStyle.Success : ButtonStyle.Primary)
 				.setDisabled(disabled),
 			new ButtonBuilder()
 				.setCustomId(`join:admin:reject:${reqID}`)
@@ -26,12 +26,12 @@ export const ButtonActionRowUser = (reqID: string, disabledSend = true, disabled
 			new ButtonBuilder()
 				.setCustomId(`join:user:send:${reqID}`)
 				.setLabel('Отправить')
-				.setStyle(ButtonStyle.Danger)
+				.setStyle(disabledSend ? ButtonStyle.Secondary : ButtonStyle.Primary)
 				.setDisabled(disabledAll || disabledSend),
 			new ButtonBuilder()
 				.setCustomId(`join:user:rules:${reqID}`)
 				.setLabel('Правила')
-				.setStyle(ButtonStyle.Danger)
+				.setStyle(disabledSend ? ButtonStyle.Primary : ButtonStyle.Secondary)
 				.setDisabled(disabledAll),
 			new ButtonBuilder()
 				.setCustomId(`join:user:biography:${reqID}`)
