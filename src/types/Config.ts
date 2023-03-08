@@ -39,7 +39,11 @@ export default interface Config {
 		},
 		payments: {
 			botlink: string,
-			updateTimes: any[]
+			updateTimes: {
+				reminder: string,
+				renewal: string,
+				ping: string
+			},
 			updateRange: number,
 			noPaymentRole: string,
 			checkOnStart?: boolean

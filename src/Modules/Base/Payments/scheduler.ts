@@ -126,7 +126,7 @@ export default (app: App, logger: Logger) => {
 					}))).data)
 		}
 	)
-	subReminder.schedule('* * */10 * * *', logger)
-	subRenewal.schedule('* * */10 * * *', logger)
-	pingBot.schedule('* */10 * * *', logger)
+	subReminder.schedule(app.config.modules.payments.updateTimes.reminder, logger)
+	subRenewal.schedule(app.config.modules.payments.updateTimes.renewal, logger)
+	pingBot.schedule(app.config.modules.payments.updateTimes.ping, logger)
 }
