@@ -9,12 +9,13 @@ import Logger from "../../../types/Logger";
 import Module from "../../../types/Module";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 
-import { ButtonActionRowAdmin } from "./Buttons";
 import CommandEvent from "./Events/CommandEvent";
 import ModalGeneralEvent from "./Events/ModalGeneralEvent";
 import UserButtons from "./Events/UserButtons";
 import BioModalEvent from "./Events/BioModalEvent";
 import AdminButtons from "./Events/AdminButtons";
+import Autoaccept from "./Misc/Autoaccept";
+import UnlockOnLoad from "./Misc/UnlockOnLoad";
 
 export default new Module(
 	"join",
@@ -43,16 +44,8 @@ export default new Module(
 			UserButtons(app, logger, userBuffer),		// Кнопки Юзера
 			BioModalEvent(app, logger),					// Модалка биография
 			AdminButtons(app, logger),					// Кнопки Админ
-			// Команда другая
-			
-			// Разблокировка всех заявок после рестарта бота
-			new DiscordEvent("ready", async () => {
-				try {
-					await app.prisma.request.updateMany({ where: { locked: true }, data: { locked: false } })
-				} catch (err) {
-					logger.Error(err)
-				}
-			})
+			Autoaccept(app, logger),					// Команда другая
+			UnlockOnLoad(app, logger)					// Разблокировка всех заявок после рестарта бота
 		]
 	}
 )
