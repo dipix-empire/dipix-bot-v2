@@ -1,13 +1,13 @@
 import { ModalBuilder, SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
 import { Message as DMsg, Interaction, ActionRowBuilder, ButtonBuilder, ButtonInteraction, EmbedBuilder, TextChannel, ThreadChannel, ButtonStyle, APIActionRowComponent, APIButtonComponent, TextInputBuilder, TextInputStyle, Collection, ModalSubmitInteraction } from "discord.js";
 import { EventEmitter } from "stream";
-import App from "../../App";
-import { ErrorEmbed, footer, ProcessingEmbed, SuccesfulEmbed } from "../../Data/Embeds";
-import Message from "../../types/AppBus/Message";
-import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
-import Logger from "../../types/Logger";
-import Module from "../../types/Module";
-import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
+import App from "../../../App";
+import { ErrorEmbed, footer, ProcessingEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
+import Message from "../../../types/AppBus/Message";
+import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
+import Logger from "../../../types/Logger";
+import Module from "../../../types/Module";
+import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 
 export default new Module(
   "join",
