@@ -1,15 +1,17 @@
-import { Interaction, Collection, TextChannel, EmbedBuilder, ThreadChannel, Message as DMsg } from "discord.js";
+import { Interaction, Collection, TextChannel, EmbedBuilder, ThreadChannel, Message as DMsg, BitField, PermissionFlagsBits, Colors, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import App from "../../../../App";
 import { ErrorEmbed, SuccesfulEmbed, footer, ProcessingEmbed } from "../../../../Data/Embeds";
 import Logger from "../../../../types/Logger";
 import DiscordEvent from "../../../../types/ModuleEvent/DiscordEvent";
 import { ButtonActionRowAdmin } from "../Buttons";
+import { connectButton } from "../../../Common/Connect";
 
 export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 	if (!interaction.isButton()) return
 	if (!interaction.customId.startsWith('join:admin:')) return
 	try {
 		await interaction.deferReply()
+		if (!interaction.memberPermissions?.has(PermissionFlagsBits.BanMembers)) return interaction.editReply({ embeds: [ErrorEmbed("Missing permissions.")] })
 		let data = interaction.customId.split(':')
 		let action = data[2]
 		let reqID = data[3]
@@ -41,6 +43,17 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 			await (interaction.message as DMsg).edit({ components: [ButtonActionRowAdmin(req.id, true, true)] })
 			await interaction.editReply({ embeds: [SuccesfulEmbed(`Заявка от игрока <@${req.discord}> принята <@${interaction.user.id}>`)] })
 			//await (app.bot.channels.cache.get(interaction.channelId) as ThreadChannel).setAutoArchiveDuration(60)
+			let discordUser = await app.bot.users.fetch(user.discord)
+			await (await discordUser.createDM()).send({
+				embeds: [new EmbedBuilder()
+					.setTitle("Ваша заявка принята!")
+					.setDescription("Теперь вы можете играть на сервере!\nДля получения IP нажмите кнопку ниже или воспользуйтесь `/connect` на дискорд-сервере.\n**Не показывайте IP никому, пожалуйста**")
+					.setColor(Colors.Green)
+					.setFooter(footer)
+					.setTimestamp(Date.now())
+				],
+				components: [connectButton]
+			})
 			return await app.prisma.request.update({ where: { id: req.id }, data: { locked: false } })
 		}
 		else if (action == "reject") {
@@ -59,7 +72,16 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 						.setDescription(`Заявка от <@${req.discord}> отклонена <@${interaction.user.id}> ${message ? `по причине ${message.content}` : ''}.`)
 				]
 			})
-			//await (app.bot.channels.cache.get(interaction.channelId) as ThreadChannel).setAutoArchiveDuration(60)
+			let user = await app.bot.users.fetch(req.discord)
+			await (await user.createDM()).send({
+				embeds: [new EmbedBuilder()
+					.setColor(Colors.Red)
+					.setDescription(`Администраторы рассмотрели заявку и приняли решение её отклонить.${message ? `по причине ${message.content}` : ''}`)
+					.setTitle("Ваша заявка отклонена!")
+					.setTimestamp(Date.now())
+					.setFooter(footer)
+				]
+			})
 		}
 		else if (action == "check") {
 			interaction.editReply({ embeds: [ProcessingEmbed(`Начата проверка...`)] })

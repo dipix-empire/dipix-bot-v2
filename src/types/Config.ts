@@ -47,6 +47,17 @@ export default interface Config {
 			updateRange: number,
 			noPaymentRole: string,
 			checkOnStart?: boolean
+		},
+		connect: {
+			java: {
+				ip: string,
+				version: string
+			},
+			bedrock: {
+				ip: string,
+				port: string,
+				version: string
+			}
 		}
 	}
 }

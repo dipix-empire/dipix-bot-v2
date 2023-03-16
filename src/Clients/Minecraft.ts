@@ -42,7 +42,7 @@ export default class Minecraft extends EventEmitter {
 		return this.localee.emit("msg", content, sender)
 	}
 	public sendCommand(cmd: string) {
-		this.localee.emit("cmd", cmd)
+		return this.localee.emit("cmd", cmd)
 	}
 
 	public start() {

@@ -15,6 +15,7 @@ model User {
   age            Int
   request        Request        @relation(fields: [requestId], references: [id])
   requestId      String         @unique @db.ObjectId
+  client         Client?        @default(both)
   //social links
   discord        String         @unique
   telegram       String?
@@ -33,6 +34,12 @@ model User {
   nextPlan       Plan           @default(default)
   nextPromo      Promo?         @relation(fields: [nextPromoId], references: [id])
   nextPromoId    String?        @db.ObjectId
+}
+
+enum Client {
+  java
+  bedrock
+  both
 }
 
 model Subscription {
