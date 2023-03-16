@@ -58,6 +58,12 @@ export default interface Config {
 				port: string,
 				version: string
 			}
+		},
+		names: {
+			emoji: string,
+			enabled: true,
+			content: string[],
+			rule: string
 		}
 	}
 }
