@@ -17,6 +17,11 @@ export const ButtonActionRowAdmin = (reqID: string, disabled = false, success = 
 				.setCustomId(`join:admin:check:${reqID}`)
 				.setLabel('Проверить')
 				.setStyle(ButtonStyle.Secondary)
+				.setDisabled(disabled),
+			new ButtonBuilder()
+				.setCustomId(`join:admin:discuss:${reqID}`)
+				.setLabel("Начать обсуждение")
+				.setStyle(ButtonStyle.Secondary)
 				.setDisabled(disabled)
 		)
 		.toJSON() as APIActionRowComponent<APIButtonComponent>
@@ -38,5 +43,19 @@ export const ButtonActionRowUser = (reqID: string, disabledSend = true, disabled
 				.setLabel('Биография')
 				.setStyle(ButtonStyle.Secondary)
 				.setDisabled(disabledAll)
+		)
+		.toJSON() as APIActionRowComponent<APIButtonComponent>
+export const DiscussActionRow = (reqID: string, locked: boolean, link: string) => 
+	new ActionRowBuilder()
+		.addComponents(
+			new ButtonBuilder()
+				.setCustomId(`join:discuss:close:${reqID}`)
+				.setLabel('Закрыть дискуссию')
+				.setStyle(ButtonStyle.Secondary)
+				.setDisabled(locked),
+			new ButtonBuilder()
+				.setStyle(ButtonStyle.Link)
+				.setURL(link)
+				.setLabel("Открыть панель администратора")
 		)
 		.toJSON() as APIActionRowComponent<APIButtonComponent>

@@ -64,6 +64,14 @@ export default interface Config {
 			enabled: true,
 			content: string[],
 			rule: string
+		},
+		join: {
+			channels: {
+				panel: string,
+				discuss: string
+			},
+			playerRole: string,
+			guestRole: string
 		}
 	}
 }
