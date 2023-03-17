@@ -1,4 +1,4 @@
-import { Interaction, PermissionFlagsBits, SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandUserOption } from "discord.js";
+import { Colors, Interaction, PermissionFlagsBits, SlashCommandBuilder, SlashCommandIntegerOption, SlashCommandUserOption } from "discord.js";
 import App from "../../../App";
 import Logger from "../../../types/Logger";
 import ModuleEvent from "../../../types/ModuleEvent";
@@ -49,14 +49,23 @@ export default ((app: App, logger: Logger) => {
 						nextPromo: true
 					}
 				})
+				let disUser = await app.bot.users.fetch(newUser.discord)
+				logger.Log(`${interaction.user.tag} изменил баланс ${disUser.tag} на $${value}. Текущий баланс пользователя: ${newUser.balance}`)
 				await interaction.editReply({ embeds: [SuccesfulEmbed(`Баланс обновлён, новый баланс <@${newUser.discord}>: $${newUser.balance}`)] });
 				await onChangeBalance(app, newUser.id, {
 					...newUser,
 					proceeded: true,
 					start: new Date(),
 				}, logger)
-				let disUser = await app.bot.users.fetch(newUser.discord)
-				disUser?.send({embeds:[InfoEmbed(`Администратор ${interaction.user.tag} обновил ваш баланс.\nВаш текущий баланс: $${newUser.balance}.\nЕсли вы считаете это ошибкой, свяжитесь с администрацией.`)]})
+				if (!disUser) throw new Error("Undefined user.")
+				let positive = value > 0
+				await (await disUser.createDM()).send({
+					embeds: [InfoEmbed(
+						`Администратор ${interaction.user.tag} ${positive ? "увеличил" : "уменьшил"} ваш баланс на $${Math.abs(value)}.`,
+						`**Ваш текущий баланс: $${newUser.balance}.\nЕсли вы считаете это ошибкой, свяжитесь с администрацией.**`
+					).setColor(positive ? Colors.Green : Colors.Red)]
+				})
+
 			} catch (err) {
 				logger.Error(err)
 				interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })

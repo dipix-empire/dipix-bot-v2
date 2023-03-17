@@ -3,6 +3,7 @@ import Console from "./Console";
 import Conversation from "../Conversation";
 import Join from "./Join";
 import Payments from "./Payments";
+import Names from "./Names";
 
 //TODO: MIGRATE PROFILES,
 export default [
@@ -10,5 +11,6 @@ export default [
 	Console,
 	Join,
 	Conversation,
-	Payments
+	Payments,
+	Names
 ]

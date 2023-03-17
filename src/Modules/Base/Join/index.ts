@@ -16,6 +16,7 @@ import BioModalEvent from "./Events/BioModalEvent";
 import AdminButtons from "./Events/AdminButtons";
 import Autoaccept from "./Misc/Autoaccept";
 import UnlockOnLoad from "./Misc/UnlockOnLoad";
+import DiscussionButtons from "./Events/DiscussionButtons";
 
 export default new Module(
 	"join",
@@ -44,6 +45,7 @@ export default new Module(
 			UserButtons(app, logger, userBuffer),		// Кнопки Юзера
 			BioModalEvent(app, logger),					// Модалка биография
 			AdminButtons(app, logger),					// Кнопки Админ
+			DiscussionButtons(app, logger),				// Кнопки дисскуссий
 			Autoaccept(app, logger),					// Команда другая
 			UnlockOnLoad(app, logger)					// Разблокировка всех заявок после рестарта бота
 		]

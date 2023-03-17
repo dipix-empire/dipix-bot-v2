@@ -47,6 +47,31 @@ export default interface Config {
 			updateRange: number,
 			noPaymentRole: string,
 			checkOnStart?: boolean
+		},
+		connect: {
+			java: {
+				ip: string,
+				version: string
+			},
+			bedrock: {
+				ip: string,
+				port: string,
+				version: string
+			}
+		},
+		names: {
+			emoji: string,
+			enabled: true,
+			content: string[],
+			rule: string
+		},
+		join: {
+			channels: {
+				panel: string,
+				discuss: string
+			},
+			playerRole: string,
+			guestRole: string
 		}
 	}
 }

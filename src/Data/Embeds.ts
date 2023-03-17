@@ -1,5 +1,5 @@
 import { Colors, EmbedBuilder } from "discord.js";
-export const footer = {text: `DiPix Bot © Philainel, 2022-2023`}
+export const footer = { text: `DiPix Bot © Philainel, 2022-2023` }
 export const ErrorEmbed = (comment = "Произошла непредвиденная ошибка.") => new EmbedBuilder()
 	.setColor('#c62828')
 	.setTitle('Ошибка!')
@@ -24,9 +24,12 @@ export const WarnEmbed = (comment: string) => new EmbedBuilder()
 	.setColor(Colors.Yellow)
 	.setTimestamp(Date.now())
 	.setFooter(footer)
-export const InfoEmbed = (title: string, comment = "") => new EmbedBuilder()
+export const InfoEmbed = (title: string, comment = "") => {
+	let res = new EmbedBuilder()
 	.setColor(Colors.DarkGrey)
 	.setTitle(title)
-	.setDescription(comment)
 	.setTimestamp(Date.now())
 	.setFooter(footer)
+	comment && res.setDescription(comment)
+	return res
+}
