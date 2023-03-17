@@ -26,7 +26,7 @@ export default (app: App, logger: Logger, userBuffer: { [key: string]: Interacti
 		if (interaction.customId.startsWith(`join:user:send:`)) {
 			await interaction.reply({ embeds: [SuccesfulEmbed("Заявка отправлена!")], ephemeral: true })
 			await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, true, true)] });
-			let msg = await ((app.bot.channels.cache.get(app.config.bot.channels.manageChannel)) as TextChannel).send({ content: `<${app.config.bot.roles.administration}>, поступила новая заявка.`, embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[1], interaction)], components: [ButtonActionRowAdmin(request.id)] })
+			let msg = await ((app.bot.channels.cache.get(app.config.modules.join.channels.panel)) as TextChannel).send({ content: `<${app.config.bot.roles.administration}>, поступила новая заявка.`, embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[1], interaction)], components: [ButtonActionRowAdmin(request.id)] })
 			await app.prisma.request.update({ where: { id: request.id }, data: { message: msg.id } })
 		}
 		else if (interaction.customId.startsWith(`join:user:rules:`)) {
