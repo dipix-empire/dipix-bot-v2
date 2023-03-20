@@ -122,6 +122,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 			let channel = await app.bot.channels.fetch(app.config.modules.join.channels.discuss)
 			if (!channel) return interaction.editReply({ embeds: [ErrorEmbed("Не найден канал дискуссий.")] })
 			if (!channel.isTextBased() || !(channel instanceof TextChannel)) return interaction.editReply({ embeds: [ErrorEmbed(`Тип канала дисскусий некорректен (<#${app.config.modules.join.channels.discuss}>`)] })
+			const panelLink = `https://discord.com/channels/${app.config.bot.guildId}/${app.config.modules.join.channels.panel}/${req.message}`;
 			let embed = new EmbedBuilder()
 				.setTitle("Детали заявки.")
 				.addFields(
@@ -133,6 +134,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 					{ name: 'Клиент', value: `${reqData[3]}`, inline: true }
 				)
 				.setTimestamp(Date.now())
+				.setURL(panelLink)
 				.setFooter(footer)
 				.setColor("#3ba55d")
 			let discordUser = await app.bot.users.fetch(req.discord)
@@ -142,7 +144,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 				type: ChannelType.PrivateThread,
 				invitable: false
 			})
-			let msg = await thread.send({ embeds: [embed], components: [DiscussActionRow(req.id, false, `https://discord.com/channels/${app.config.bot.guildId}/${app.config.modules.join.channels.panel}/${req.message}`)] })
+			let msg = await thread.send({ embeds: [embed], components: [DiscussActionRow(req.id, false, panelLink)] })
 			const discussLink = `https://discord.com/channels/${app.config.bot.guildId}/${thread.id}/${msg.id}`;
 			await (await discordUser.createDM()).send({
 				embeds: [new EmbedBuilder()
