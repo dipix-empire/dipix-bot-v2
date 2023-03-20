@@ -10,7 +10,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 	if (!interaction.isButton()) return
 	if (!interaction.customId.startsWith('join:admin:')) return
 	try {
-		await interaction.deferReply()
+		await interaction.deferReply({ ephemeral: true })
 		if (!interaction.memberPermissions?.has(PermissionFlagsBits.BanMembers)) return interaction.editReply({ embeds: [ErrorEmbed("Missing permissions.")] })
 		let data = interaction.customId.split(':')
 		let action = data[2]
@@ -55,6 +55,14 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 				],
 				components: [connectButton]
 			})
+			await interaction.message.reply({ embeds: [
+				new EmbedBuilder()
+					.setTimestamp(Date.now())
+					.setTitle("Заявка принята.")
+					.setFooter(footer)
+					.setColor(Colors.Green)
+					.setDescription(`Заявка от <@${req.discord}>`)
+			]})
 			return await app.prisma.request.update({ where: { id: req.id }, data: { locked: false } })
 		}
 		else if (action == "reject") {
@@ -64,7 +72,8 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 			if (messages != null)
 				message = messages.filter((msg: DMsg<true>) => msg.author.id == interaction.user.id).first() || null
 			await (interaction.message as DMsg).edit({ components: [ButtonActionRowAdmin(req.id, true)] })
-			await interaction.editReply({
+			await interaction.editReply({embeds: [SuccesfulEmbed("Заявка отклонена")]})
+			await interaction.message.reply({
 				embeds: [
 					new EmbedBuilder()
 						.setTimestamp(Date.now())
@@ -134,6 +143,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 				invitable: false
 			})
 			let msg = await thread.send({ embeds: [embed], components: [DiscussActionRow(req.id, false, `https://discord.com/channels/${app.config.bot.guildId}/${app.config.modules.join.channels.panel}/${req.message}`)] })
+			const discussLink = `https://discord.com/channels/${app.config.bot.guildId}/${thread.id}/${msg.id}`;
 			await (await discordUser.createDM()).send({
 				embeds: [new EmbedBuilder()
 					.setColor(Colors.Yellow)
@@ -144,7 +154,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 				], components: [new ActionRowBuilder()
 					.addComponents(new ButtonBuilder()
 						.setStyle(ButtonStyle.Link)
-						.setURL(`https://discord.com/channels/${app.config.bot.guildId}/${thread.id}/${msg.id}`)
+						.setURL(discussLink)
 						.setLabel("Открыть обсуждение")
 					)
 					.toJSON() as APIActionRowComponent<APIButtonComponent>
@@ -155,13 +165,14 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 				components: [new ActionRowBuilder()
 					.addComponents(new ButtonBuilder()
 						.setStyle(ButtonStyle.Link)
-						.setURL(`https://discord.com/channels/${app.config.bot.guildId}/${thread.id}/${msg.id}`)
+						.setURL(discussLink)
 						.setLabel("Открыть обсуждение")
 					)
 					.toJSON() as APIActionRowComponent<APIButtonComponent>
 				]
 			})
 			await (await thread.send(`<@${req.discord}>, <@${interaction.user.id}>`)).delete()
+			await interaction.message.edit({components: [ButtonActionRowAdmin(reqID, false, false, discussLink)]})
 		}
 	} catch (err) {
 		logger.Error(err)

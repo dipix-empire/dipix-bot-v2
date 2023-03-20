@@ -5,6 +5,7 @@ import Logger from "../../../../types/Logger";
 import DiscordEvent from "../../../../types/ModuleEvent/DiscordEvent";
 import { ButtonActionRowAdmin, DiscussActionRow } from "../Buttons";
 import { connectButton } from "../../../Common/Connect";
+import { link } from "fs";
 
 export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
 	if (!interaction.isButton()) return
@@ -24,6 +25,8 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
 			await interaction.editReply({ embeds: [SuccesfulEmbed("Обсуждение закрыто.")] })
 			await thread.setLocked(true)
 			await thread.setAutoArchiveDuration(ThreadAutoArchiveDuration.OneHour)
+			const link = `https://discord.com/channels/${app.config.bot.guildId}/${thread.id}/${interaction.message.id}`;
+			await interaction.message.edit({components: [ DiscussActionRow( reqID, true, link)]})
 			await (await (await app.bot.users.fetch(req.discord)).createDM()).send({
 				embeds: [new EmbedBuilder()
 					.setColor(Colors.Yellow)

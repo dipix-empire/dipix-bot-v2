@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, APIActionRowComponent, APIButtonComponent } from "discord.js"
 
-export const ButtonActionRowAdmin = (reqID: string, disabled = false, success = false) =>
+export const ButtonActionRowAdmin = (reqID: string, disabled = false, success = false, discuss = "") =>
 	new ActionRowBuilder()
 		.addComponents(
 			new ButtonBuilder()
@@ -18,11 +18,16 @@ export const ButtonActionRowAdmin = (reqID: string, disabled = false, success = 
 				.setLabel('Проверить')
 				.setStyle(ButtonStyle.Secondary)
 				.setDisabled(disabled),
-			new ButtonBuilder()
+			discuss ? new ButtonBuilder()
 				.setCustomId(`join:admin:discuss:${reqID}`)
 				.setLabel("Начать обсуждение")
 				.setStyle(ButtonStyle.Secondary)
 				.setDisabled(disabled)
+			: new ButtonBuilder()
+				.setLabel("Открыть обсуждение")
+				.setStyle(ButtonStyle.Link)
+				.setDisabled(disabled)
+				.setURL(discuss)
 		)
 		.toJSON() as APIActionRowComponent<APIButtonComponent>
 export const ButtonActionRowUser = (reqID: string, disabledSend = true, disabledAll = false) =>

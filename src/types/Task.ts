@@ -16,6 +16,15 @@ export default class Task {
 		})
 	}
 
+	public async forceExecute(logger: Logger) {
+		logger.Verbose(`Forcibly executing task ${this.name}`)
+		try {
+			await this.handler({fireDate: new Date(), logger: logger.getChild(this.name)})
+		} catch (e) {
+			logger.Error(e, `Task ${this.name} trown an error:`)
+		}
+	}
+
 	constructor(
 		private readonly name: string,
 		private readonly handler: (params: TaskHandlerArgs) => any
