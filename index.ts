@@ -3,8 +3,9 @@ import config from "./config"
 import secrets from "./secrets";
 import Modules from "./src/Modules";
 
+const app: App = new App(config, secrets, Modules);
 (async () => {
-	let app = await new App(config, secrets, Modules).start()
+	await app.start()
 	process.on("exit", async () => {
 		try {
 			await app.stop()

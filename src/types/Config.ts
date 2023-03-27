@@ -72,6 +72,10 @@ export default interface Config {
 			},
 			playerRole: string,
 			guestRole: string
+		},
+		goodmorning: {
+			emojis: string[],
+			regex: RegExp
 		}
 	}
 }
