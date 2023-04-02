@@ -2,8 +2,8 @@ import { Interaction, SlashCommandBuilder, SlashCommandIntegerOption } from "dis
 import App from "../../../App";
 import Logger from "../../../types/Logger";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
-import { ErrorEmbed, InfoEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
-import { getName } from "./plans"
+import { ErrorEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
+
 export default (app: App, logger: Logger) => {
 	logger.Verbose(app.bot.uploadCommand("main", (slashCommandBuilder: SlashCommandBuilder) =>
 		slashCommandBuilder
@@ -30,10 +30,10 @@ export default (app: App, logger: Logger) => {
 				let sum = interaction.options.get("sum", true)
 				logger.Debug("Sum", sum)
 				if (typeof sum.value != "number") throw new Error("Incorrect argument type.")
-				if (!user) return await interaction.editReply({embeds: [ErrorEmbed("Пользователь не найден")]})
-				if (user.balance < sum.value) return interaction.editReply({embeds: [ErrorEmbed("Сумма пожертвования меньше суммы на балансе.\nПополните баланс или измените сумму пожертвования.")]})
+				if (!user) return await interaction.editReply({ embeds: [ErrorEmbed("Пользователь не найден")] })
+				if (user.balance < sum.value) return interaction.editReply({ embeds: [ErrorEmbed("Сумма пожертвования меньше суммы на балансе.\nПополните баланс или измените сумму пожертвования.")] })
 				await app.prisma.user.update({
-					where: {id: user.id},
+					where: { id: user.id },
 					data: {
 						balance: {
 							decrement: sum.value
@@ -47,7 +47,7 @@ export default (app: App, logger: Logger) => {
 						timestamp: new Date()
 					}
 				})
-				await interaction.editReply({embeds: [SuccesfulEmbed(`Пожертвование на сумму $${sum.value} отправлено :heart:`)]})
+				await interaction.editReply({ embeds: [SuccesfulEmbed(`Пожертвование на сумму $${sum.value} отправлено :heart:`)] })
 			} catch (err) {
 				logger.Error(err)
 				interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })

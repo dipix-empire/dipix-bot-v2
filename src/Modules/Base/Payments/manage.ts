@@ -4,7 +4,7 @@ import Logger from "../../../types/Logger";
 import ModuleEvent from "../../../types/ModuleEvent";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 import { ErrorEmbed, InfoEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
-import { onChangeBalance } from "./updateSubscribtion";
+import { onChangeBalance } from "../Subscriptions/updateSubscribtion";
 
 export default ((app: App, logger: Logger) => {
 	app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) => slashCommand

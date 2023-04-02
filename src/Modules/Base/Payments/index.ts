@@ -6,15 +6,10 @@ import donate from "./donate";
 import manage from "./manage";
 import profile from "./profile";
 import promoManager from "./promo";
-import scheduler from "./scheduler";
-
 
 export default new Module(
 	"payments",
 	(app: App, appBusModuleComponent: AppBusModuleComponent, logger: Logger) => {
-
-		scheduler(app, logger)
-
 		return [
 			profile(app, logger), 
 			donate(app, logger),

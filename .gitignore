@@ -106,5 +106,7 @@ dist
 # Config and secrets files
 config.ts
 secrets.ts
+config.js
+secrets.js
 
 src/generated
