@@ -1,10 +1,10 @@
-import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder, ContextMenuCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { Client, ClientOptions, Guild } from "discord.js";
 import App from "../App";
 import Logger from "../types/Logger";
-import { UploadCommandType } from "../types/TypeAlias";
+import { UploadCommandType, UploadContextMenuCommandType, UploadSlashCommandType } from "../types/TypeAlias";
 
 export default class Discord extends Client {
 
@@ -32,9 +32,20 @@ export default class Discord extends Client {
 		})
 		super.login(this.discordToken)
 	}
-
-	public uploadCommand(guildId: "main" | "shared", slashCommand: (slashCommand: SlashCommandBuilder) => UploadCommandType) {
+	/**
+	 * @deprecated
+	 */
+	public uploadCommand(guildId: "main" | "shared", slashCommand: (slashCommand: SlashCommandBuilder) => UploadSlashCommandType) {
+		return this.uploadSlashCommand(guildId, slashCommand)
+	}
+	public uploadSlashCommand(guildId: "main" | "shared", slashCommand: (slashCommand: SlashCommandBuilder) => UploadSlashCommandType) {
 		let command = slashCommand(new SlashCommandBuilder())
+		if (this.commands[guildId] == null) this.commands[guildId] = []
+		this.commands[guildId].push(command)
+		return `Added command '${command.name}' to upload (guild: ${guildId})`
+	}
+	public uploadContextMenuCommand(guildId: "main" | "shared", contextMenuCommand: (contextMenuCommand: ContextMenuCommandBuilder) => UploadContextMenuCommandType) {
+		let command = contextMenuCommand(new ContextMenuCommandBuilder())
 		if (this.commands[guildId] == null) this.commands[guildId] = []
 		this.commands[guildId].push(command)
 		return `Added command '${command.name}' to upload (guild: ${guildId})`

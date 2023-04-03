@@ -136,3 +136,8 @@ model Organization {
   members      User[]
   memberRoleId String
 }
+
+model KeepUpThread {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  discord String @unique
+}
