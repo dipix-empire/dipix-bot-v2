@@ -14,7 +14,8 @@ export default new Module("GoodMorning", (app: App, appBusModule: AppBusModuleCo
 	return [
 		new DiscordEvent("messageCreate", async (msg: Message) => {
 			try {
-				if (!msg.content.match(app.config.modules.goodmorning.regex)?.length) return logger.Debug("RegExp test returned false")
+				if (!msg.content.match(app.config.modules.goodmorning.regex)?.length) return // logger.Debug("RegExp test returned false")
+				if (!msg.content.match(app.config.modules.goodmorning.regex)?.length) return // logger.Debug("RegExp test returned false")
 				let emoji = emojis[Math.floor(Math.random() * emojis.length)]
 				await msg.react(emoji)
 				logger.Debug("Emoji picked...", emoji)

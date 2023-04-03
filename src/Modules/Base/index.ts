@@ -4,6 +4,7 @@ import Conversation from "../Conversation";
 import Join from "./Join";
 import Payments from "./Payments";
 import Names from "./Names";
+import Subscriptions from "./Subscriptions";
 
 //TODO: MIGRATE PROFILES,
 export default [
@@ -12,5 +13,6 @@ export default [
 	Join,
 	Conversation,
 	Payments,
-	Names
+	Names,
+	Subscriptions
 ]

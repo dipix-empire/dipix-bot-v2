@@ -3,7 +3,8 @@ import App from "../../../App";
 import Logger from "../../../types/Logger";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 import { ErrorEmbed, InfoEmbed } from "../../../Data/Embeds";
-import { getName } from "./plans"
+import { getName } from "../Subscriptions/plans"
+
 export default (app: App, logger: Logger) => {
 	logger.Verbose(app.bot.uploadCommand("main", (slashCommandBuilder: SlashCommandBuilder) =>
 		slashCommandBuilder

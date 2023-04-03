@@ -1,5 +1,7 @@
-import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder } from "@discordjs/builders"
+import { SlashCommandBuilder, SlashCommandSubcommandsOnlyBuilder, ContextMenuCommandBuilder } from "@discordjs/builders"
 import Logger from "./Logger"
 
 export type TaskHandlerArgs = {/*logger?: Logger,*/ fireDate: Date, logger:Logger}
-export type UploadCommandType = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|SlashCommandSubcommandsOnlyBuilder
+export type UploadSlashCommandType = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|SlashCommandSubcommandsOnlyBuilder
+export type UploadContextMenuCommandType = ContextMenuCommandBuilder
+export type UploadCommandType = UploadContextMenuCommandType | UploadSlashCommandType
