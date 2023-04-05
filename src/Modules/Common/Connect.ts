@@ -1,12 +1,12 @@
 import { APIEmbedField, ActionRowBuilder, ButtonBuilder, ButtonStyle, Interaction, InteractionReplyOptions, MessageResolvable, SlashCommandBuilder, SlashCommandStringOption, User } from "discord.js";
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import Logger from "../../types/Logger";
 import { ErrorEmbed, InfoEmbed } from "../../Data/Embeds";
 
-export default new Module("connect",
+export default new ModuleBuilder("connect",
 	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		async function getReply(user: User,): Promise<InteractionReplyOptions> {
 			let userClient = await app.prisma.user.findFirst({ where: { discord: user.id }, select: { client: true } })

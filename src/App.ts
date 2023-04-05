@@ -2,7 +2,7 @@ import Discord from "./Clients/Discord"
 import AppBusMain from "./types/AppBus/Main"
 import AppBusModuleComponent from "./types/AppBus/ModuleComponent"
 import Config from "./types/Config"
-import Module from "./types/Module"
+import ModuleBuilder from "./types/Module"
 import DiscordEvent from "./types/ModuleEvent/DiscordEvent"
 import MinecraftEvent from "./types/ModuleEvent/MinecraftEvent"
 import Secrets from "./types/Secrets"
@@ -20,7 +20,7 @@ export default class App {
 	public readonly config: Config
 	private readonly logger: Logger
 	private appBusMain: AppBusMain
-	private readonly modules: Module[]
+	private readonly modules: ModuleBuilder[]
 
 	public async start() {
 		this.modules.forEach(async m => {
@@ -59,7 +59,7 @@ export default class App {
 		await this.minecraft.stop()
 	}
 
-	constructor(config: Config, secrets: Secrets, modules: Module[]) {
+	constructor(config: Config, secrets: Secrets, modules: ModuleBuilder[]) {
 		this.logger = new Logger("app", config.logLevel)
 		this.logger.Log("Building app component...")
 		this.bot = new Discord(

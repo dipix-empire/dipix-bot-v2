@@ -1,12 +1,12 @@
 import { Message, TextChannel } from "discord.js";
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import Logger from "../../types/Logger";
 import MinecraftEvent from "../../types/ModuleEvent/MinecraftEvent";
 
-export default new Module(
+export default new ModuleBuilder(
 	"console", async (app: App,  appBusModule: AppBusModuleComponent, logger: Logger) => {
 		let channelId = app.config.bot.channels.consoleIntegration
 		return [

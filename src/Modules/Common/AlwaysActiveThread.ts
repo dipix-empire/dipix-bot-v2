@@ -2,11 +2,11 @@ import { ChannelType, ContextMenuCommandType, ContextMenuCommandBuilder, GuildCh
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import { ErrorEmbed, SuccesfulEmbed } from "../../Data/Embeds";
 
-export default new Module("Threads", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
+export default new ModuleBuilder("Threads", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 
 	logger.Verbose(app.bot.uploadSlashCommand("main", (slashCommand: SlashCommandBuilder) => slashCommand
 		.setName("alwaysactive")

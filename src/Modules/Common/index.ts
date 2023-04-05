@@ -1,4 +1,4 @@
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import AlwaysActiveThread from "./AlwaysActiveThread";
 import Connect from "./Connect";
 import GoodMorning from "./GoodMorning";
@@ -9,4 +9,4 @@ export default [
 	Info,
 	GoodMorning,
 	AlwaysActiveThread
-] as Module[]
+] as ModuleBuilder[]

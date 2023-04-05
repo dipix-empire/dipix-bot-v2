@@ -6,7 +6,7 @@ import { ErrorEmbed, footer, ProcessingEmbed, SuccesfulEmbed } from "../../../Da
 import Message from "../../../types/AppBus/Message";
 import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
 import Logger from "../../../types/Logger";
-import Module from "../../../types/Module";
+import ModuleBuilder from "../../../types/Module";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 
 import CommandEvent from "./Events/CommandEvent";
@@ -18,7 +18,7 @@ import Autoaccept from "./Misc/Autoaccept";
 import UnlockOnLoad from "./Misc/UnlockOnLoad";
 import DiscussionButtons from "./Events/DiscussionButtons";
 
-export default new Module(
+export default new ModuleBuilder(
 	"join",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		logger.Verbose(app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) =>

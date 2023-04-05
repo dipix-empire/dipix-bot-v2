@@ -4,7 +4,7 @@ import AppBusModuleComponent from "./AppBus/ModuleComponent"
 import Logger from "./Logger"
 import ModuleEvent from "./ModuleEvent"
 
-export default class Module {
+export default class ModuleBuilder {
 	public readonly name: string
 	public readonly prepare: (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => ModuleEvent[] | Promise<ModuleEvent[]>
 	constructor (name: string, prepare: (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => ModuleEvent[] | Promise<ModuleEvent[]>) {

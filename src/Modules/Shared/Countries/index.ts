@@ -2,12 +2,12 @@ import { GuildMember, PartialGuildMember } from "discord.js";
 import App from "../../../App";
 import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
 import Logger from "../../../types/Logger";
-import Module from "../../../types/Module";
+import ModuleBuilder from "../../../types/Module";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 import resolveRoles from "./resolveRoles";
 import getUpdate, { UpdateState } from "./getUpdate";
 
-export default new Module(
+export default new ModuleBuilder(
 	"CountryLinking",
 	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		return [

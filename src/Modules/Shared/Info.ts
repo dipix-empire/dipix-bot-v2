@@ -2,14 +2,14 @@ import { Guild, Interaction, NonThreadGuildBasedChannel, PermissionFlagsBits, Sl
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import { UploadCommandType } from "../../types/TypeAlias";
 import { ErrorEmbed, InfoEmbed } from "../../Data/Embeds";
 import Message from "../../types/AppBus/Message";
 import Conversation from "../../types/Conversation";
 
-export default new Module(
+export default new ModuleBuilder(
 	'SharedInfo',
 
 	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {

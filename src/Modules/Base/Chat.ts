@@ -2,12 +2,12 @@ import { Message, EmbedBuilder, TextChannel, Emoji } from "discord.js";
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import MinecraftEvent from "../../types/ModuleEvent/MinecraftEvent";
 import { ErrorEmbed } from "../../Data/Embeds";
 
-export default new Module(
+export default new ModuleBuilder(
 	"chat", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		return [
 			new DiscordEvent("messageCreate", async (msg: Message) => {

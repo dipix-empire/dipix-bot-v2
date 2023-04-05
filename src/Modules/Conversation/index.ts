@@ -2,11 +2,11 @@ import { ChannelType, Message } from "discord.js";
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Conversation from "../../types/Conversation";
-import Module from "../../types/Module";
+import ModuleBuilder from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import Presets from "./Presets";
 
-export default new Module(
+export default new ModuleBuilder(
 	"conversation",
 	(app: App, appBusModule: AppBusModuleComponent) => {
 		let conversations = {} as {[key: string]: Conversation}

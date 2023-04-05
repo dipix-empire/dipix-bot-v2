@@ -4,12 +4,12 @@ import Discord from "../../Clients/Discord"
 import { ErrorEmbed, InfoEmbed } from "../../Data/Embeds"
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent"
 import Logger from "../../types/Logger"
-import Module from "../../types/Module"
+import ModuleBuilder from "../../types/Module"
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent"
 import Task from "../../types/Task"
 import { TaskHandlerArgs } from "../../types/TypeAlias"
 
-export default new Module(
+export default new ModuleBuilder(
 	"info",
 	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
 		const test = new Task("test-task", ({}: TaskHandlerArgs) => {
