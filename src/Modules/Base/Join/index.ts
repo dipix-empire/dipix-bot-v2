@@ -1,13 +1,6 @@
-import { ModalBuilder, SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
-import { Message as DMsg, Interaction, ActionRowBuilder, ButtonBuilder, ButtonInteraction, EmbedBuilder, TextChannel, ThreadChannel, ButtonStyle, APIActionRowComponent, APIButtonComponent, TextInputBuilder, TextInputStyle, Collection, ModalSubmitInteraction } from "discord.js";
-import { EventEmitter } from "stream";
-import App from "../../../App";
-import { ErrorEmbed, footer, ProcessingEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
-import Message from "../../../types/AppBus/Message";
-import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
-import Logger from "../../../types/Logger";
-import ModuleBuilder from "../../../types/Module";
-import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
+import { SlashCommandBuilder, SlashCommandUserOption } from "@discordjs/builders";
+import { Interaction } from "discord.js";
+import ModuleBuilder, { Module } from "../../../types/Module";
 
 import CommandEvent from "./Events/CommandEvent";
 import ModalGeneralEvent from "./Events/ModalGeneralEvent";
@@ -20,13 +13,13 @@ import DiscussionButtons from "./Events/DiscussionButtons";
 
 export default new ModuleBuilder(
 	"join",
-	async (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		logger.Verbose(app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) =>
+	async (module: Module) => {
+		module.logger.Verbose(module.app.bot.uploadSlashCommand("main", (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("join")
 				.setDescription("Написать заявку для присоединения к серверу.")
 		))
-		logger.Verbose(app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) =>
+		module.logger.Verbose(module.app.bot.uploadSlashCommand("main", (slashCommand: SlashCommandBuilder) =>
 			slashCommand
 				.setName("autoaccept")
 				.setDescription("Автоматически принять заявку игрока.")
@@ -38,17 +31,18 @@ export default new ModuleBuilder(
 				)
 		))
 
-		let userBuffer: {[key: string]: Interaction} = {} 
-		return [
-			CommandEvent(app, logger),					// Команда
-			ModalGeneralEvent(app, logger, userBuffer),	// Модалка основная инфа
-			UserButtons(app, logger, userBuffer),		// Кнопки Юзера
-			BioModalEvent(app, logger),					// Модалка биография
-			AdminButtons(app, logger),					// Кнопки Админ
-			DiscussionButtons(app, logger),				// Кнопки дисскуссий
-			Autoaccept(app, logger),					// Команда другая
-			UnlockOnLoad(app, logger)					// Разблокировка всех заявок после рестарта бота
-		]
+		let userBuffer: { [key: string]: Interaction } = {}
+		module.addEvent(
+			CommandEvent(module.app, module.logger),					// Команда
+			ModalGeneralEvent(module.app, module.logger, userBuffer),	// Модалка основная инфа
+			UserButtons(module.app, module.logger, userBuffer),		// Кнопки Юзера
+			BioModalEvent(module.app, module.logger),					// Модалка биография
+			AdminButtons(module.app, module.logger),					// Кнопки Админ
+			DiscussionButtons(module.app, module.logger),				// Кнопки дисскуссий
+			Autoaccept(module.app, module.logger),					// Команда другая
+			UnlockOnLoad(module.app, module.logger)					// Разблокировка всех заявок после рестарта бота
+		)
+		return module
 	}
 )
 

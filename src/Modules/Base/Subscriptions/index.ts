@@ -1,12 +1,12 @@
 import App from "../../../App";
 import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
 import Logger from "../../../types/Logger";
-import ModuleBuilder from "../../../types/Module";
+import ModuleBuilder, { Module } from "../../../types/Module";
 import scheduler from "./scheduler";
 
-export default new ModuleBuilder("subscriptions", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
+export default new ModuleBuilder("subscriptions", (module: Module) => {
 	
-	scheduler(app, logger)
+	scheduler(module.app, module.logger)
 
-	return []
+	return module
 })

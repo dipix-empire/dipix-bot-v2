@@ -5,3 +5,4 @@ export type TaskHandlerArgs = {/*logger?: Logger,*/ fireDate: Date, logger:Logge
 export type UploadSlashCommandType = Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">|SlashCommandSubcommandsOnlyBuilder
 export type UploadContextMenuCommandType = ContextMenuCommandBuilder
 export type UploadCommandType = UploadContextMenuCommandType | UploadSlashCommandType
+export type Promisable<T extends any> = T | Promise<T>

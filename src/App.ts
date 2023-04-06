@@ -2,7 +2,7 @@ import Discord from "./Clients/Discord"
 import AppBusMain from "./types/AppBus/Main"
 import AppBusModuleComponent from "./types/AppBus/ModuleComponent"
 import Config from "./types/Config"
-import ModuleBuilder from "./types/Module"
+import ModuleBuilder, { Module } from "./types/Module"
 import DiscordEvent from "./types/ModuleEvent/DiscordEvent"
 import MinecraftEvent from "./types/ModuleEvent/MinecraftEvent"
 import Secrets from "./types/Secrets"
@@ -26,7 +26,8 @@ export default class App {
 		this.modules.forEach(async m => {
 			let eCount = 0
 			let logger = new Logger(m.name, this.config.logLevel, "module");
-			(await m.prepare(this, new AppBusModuleComponent(this.appBusMain, m.name, logger), logger)).forEach(e => {
+			let module = await m.build(new Module(this, new AppBusModuleComponent(this.appBusMain, m.name, logger), logger, []))
+			module.getEvents().forEach(e => {
 				switch (e.type) {
 					case "discord":
 						let discordEvent = e as DiscordEvent<any>

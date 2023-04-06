@@ -1,32 +1,32 @@
 import { Message, EmbedBuilder, TextChannel, Emoji } from "discord.js";
-import App from "../../App";
+import Spp from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
-import ModuleBuilder from "../../types/Module";
+import ModuleBuilder, { Module } from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import MinecraftEvent from "../../types/ModuleEvent/MinecraftEvent";
 import { ErrorEmbed } from "../../Data/Embeds";
 
 export default new ModuleBuilder(
-	"chat", (app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		return [
+	"chat", (module: Module) => {
+		module.addEvent(
 			new DiscordEvent("messageCreate", async (msg: Message) => {
 				try {
-					if (msg.channel.id != app.config.bot.channels.chatIntagration) return
+					if (msg.channel.id != module.app.config.bot.channels.chatIntagration) return
 					if (msg.author.bot) return
-					let user = await app.prisma.user.findUnique({ where: { discord: msg.author.id }, select: { nickname: true } })
+					let user = await module.app.prisma.user.findUnique({ where: { discord: msg.author.id }, select: { nickname: true } })
 					if (!user) {
 						await msg.react('❌')
-						return logger.Error(new Error("Undefined user."))
+						return module.logger.Error(new Error("Undefined user."))
 					}
-					if (!msg.content) return logger.Debug(`Ignoring empty message content `)
+					if (!msg.content) return module.logger.Debug(`Ignoring empty message content `)
 					let data = msg.content.split("\n")
-					let res = app.minecraft.sendChatMessage(user.nickname, data[0])
+					let res = module.app.minecraft.sendChatMessage(user.nickname, data[0])
 					data.shift()
 					if (res) {
 						await msg.react("✅")
 						for (let i = 0; i < data.length; i++) {
-							app.minecraft.sendChatMessage(user.nickname, data[i])
+							module.app.minecraft.sendChatMessage(user.nickname, data[i])
 						}
 					}
 					else {
@@ -38,21 +38,21 @@ export default new ModuleBuilder(
 							} catch (err) {
 								logger.Error(err)
 							}
-						}, 5_000, reply, logger)
+						}, 5_000, reply, module.logger)
 					}
 				} catch (err) {
-					logger.Error(err)
+					module.logger.Error(err)
 				}
 
 			}),
 			new MinecraftEvent("msg", async (msg: { sender: string, content: string }) => {
 				try {
 					// if (!msg.content.startsWith("!")) return
-					logger.Debug("Recieved message:", msg)
-					let user = await app.prisma.user.findFirst({ where: { nickname: msg.sender } })
-					if (!user) return logger.Error(new Error("Undefined user."))
-					// let dUser = await app.bot.users.fetch(user.discord)
-					let channel = (app.bot.channels.cache.get(app.config.bot.channels.chatIntagration)) as TextChannel
+					module.logger.Debug("Recieved message:", msg)
+					let user = await module.app.prisma.user.findFirst({ where: { nickname: msg.sender } })
+					if (!user) return module.logger.Error(new Error("Undefined user."))
+					// let dUser = await module.app.bot.users.fetch(user.discord)
+					let channel = (module.app.bot.channels.cache.get(module.app.config.bot.channels.chatIntagration)) as TextChannel
 					await channel.send({
 						embeds: [
 							new EmbedBuilder()
@@ -61,9 +61,10 @@ export default new ModuleBuilder(
 					})
 					// await channel.send(`<@${user.discord}> **->** ${msg.content}`)
 				} catch (err) {
-					logger.Error(err)
+					module.logger.Error(err)
 				}
 			})
-		]
+		)
+		return module
 	}
 )
