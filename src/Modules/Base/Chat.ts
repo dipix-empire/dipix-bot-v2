@@ -1,4 +1,4 @@
-import { Message, EmbedBuilder, TextChannel, Emoji } from "discord.js";
+import { Message, EmbedBuilder, TextChannel, Emoji, Colors } from "discord.js";
 import Spp from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
@@ -45,7 +45,7 @@ export default new ModuleBuilder(
 				}
 
 			}),
-			new MinecraftEvent("msg", async (msg: { sender: string, content: string }) => {
+			new MinecraftEvent("message", async (msg: { sender: string, content: string }) => {
 				try {
 					// if (!msg.content.startsWith("!")) return
 					module.logger.Debug("Recieved message:", msg)
@@ -63,7 +63,42 @@ export default new ModuleBuilder(
 				} catch (err) {
 					module.logger.Error(err)
 				}
-			})
+			}),
+			new MinecraftEvent("status", async (status: { online: boolean }) => {
+				try {
+					module.logger.Debug("Recieved status:", status)
+					let channel = (module.app.bot.channels.cache.get(module.app.config.bot.channels.chatIntagration)) as TextChannel
+					await channel.send({
+						embeds: [
+							new EmbedBuilder()
+								.setDescription(status.online ? `🟢 **Сервер запущен**` : `🔴 **Сервер выключен**`)
+						]
+					})
+				} catch (err) {
+					module.logger.Error(err)
+				}
+			}),
+			new MinecraftEvent("player", async (player: { name: string, online: boolean }) => {
+				try {
+					// if (!msg.content.startsWith("!")) return
+					module.logger.Debug("Recieved player status:", player)
+					let user = await module.app.prisma.user.findFirst({ where: { nickname: player.name } })
+					if (!user) return module.logger.Error(new Error("Undefined user."))
+					// let dUser = await module.app.bot.users.fetch(user.discord)
+					let channel = (module.app.bot.channels.cache.get(module.app.config.bot.channels.chatIntagration)) as TextChannel
+					await channel.send({
+						embeds: [
+							new EmbedBuilder()
+								// .setDescription(`<@${user.discord}> **${player.online ? "присоединился к игре" : "покинул игру"}.**`)
+								.setDescription(`**[${player.online ? "🔹" : "🔸" }]** <@${user.discord}>`)
+								.setColor(player.online ? Colors.Green : Colors.Red)
+						]
+					})
+					// await channel.send(`<@${user.discord}> **->** ${msg.content}`)
+				} catch (err) {
+					module.logger.Error(err)
+				}
+			}),
 		)
 		return module
 	}
