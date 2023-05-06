@@ -1,6 +1,4 @@
 import { Message, EmbedBuilder, TextChannel, Emoji, Colors } from "discord.js";
-import Spp from "../../App";
-import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
 import ModuleBuilder, { Module } from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
@@ -56,7 +54,7 @@ export default new ModuleBuilder(
 					await channel.send({
 						embeds: [
 							new EmbedBuilder()
-								.setDescription(`<@${user.discord}> **->** ${msg.content}`)
+								.setDescription(`**[💬]** <@${user.discord}> **->** ${msg.content}`)
 						]
 					})
 					// await channel.send(`<@${user.discord}> **->** ${msg.content}`)
@@ -90,7 +88,8 @@ export default new ModuleBuilder(
 						embeds: [
 							new EmbedBuilder()
 								// .setDescription(`<@${user.discord}> **${player.online ? "присоединился к игре" : "покинул игру"}.**`)
-								.setDescription(`**[${player.online ? "🔹" : "🔸" }]** <@${user.discord}>`)
+								.setDescription(`**[${player.online ? "🟢" : "🔴" }]** <@${user.discord}>`)
+								// .setDescription(`**[${player.online ? "🔹" : "🔸" }]** <@${user.discord}>`)
 								.setColor(player.online ? Colors.Green : Colors.Red)
 						]
 					})
