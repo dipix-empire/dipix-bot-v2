@@ -54,7 +54,7 @@ export default new ModuleBuilder(
 					await channel.send({
 						embeds: [
 							new EmbedBuilder()
-								.setDescription(`**[💬]** <@${user.discord}> **->** ${msg.content}`)
+								.setDescription(module.app.config.modules.chat.discord.playerMessage(user.discord, msg.content) || `**[💬]** <@${user.discord}> **->** ${msg.content}`)
 						]
 					})
 					// await channel.send(`<@${user.discord}> **->** ${msg.content}`)
@@ -69,7 +69,7 @@ export default new ModuleBuilder(
 					await channel.send({
 						embeds: [
 							new EmbedBuilder()
-								.setDescription(status.online ? `🟢 **Сервер запущен**` : `🔴 **Сервер выключен**`)
+								.setDescription(module.app.config.modules.chat.discord.serverOnline(status.online) || status.online ? `🟢 **Сервер запущен**` : `🔴 **Сервер выключен**`)
 						]
 					})
 				} catch (err) {
@@ -88,8 +88,9 @@ export default new ModuleBuilder(
 						embeds: [
 							new EmbedBuilder()
 								// .setDescription(`<@${user.discord}> **${player.online ? "присоединился к игре" : "покинул игру"}.**`)
-								.setDescription(`**[${player.online ? "🟢" : "🔴" }]** <@${user.discord}>`)
+								// .setDescription(`**[${player.online ? "🟢" : "🔴" }]** <@${user.discord}>`)
 								// .setDescription(`**[${player.online ? "🔹" : "🔸" }]** <@${user.discord}>`)
+								.setDescription(module.app.config.modules.chat.discord.playerJoined(user.discord, player.online))
 								.setColor(player.online ? Colors.Green : Colors.Red)
 						]
 					})
