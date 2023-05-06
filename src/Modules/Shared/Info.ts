@@ -2,23 +2,23 @@ import { Guild, Interaction, NonThreadGuildBasedChannel, PermissionFlagsBits, Sl
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
 import Logger from "../../types/Logger";
-import Module from "../../types/Module";
+import ModuleBuilder, { Module } from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import { UploadCommandType } from "../../types/TypeAlias";
 import { ErrorEmbed, InfoEmbed } from "../../Data/Embeds";
 import Message from "../../types/AppBus/Message";
 import Conversation from "../../types/Conversation";
 
-export default new Module(
+export default new ModuleBuilder(
 	'SharedInfo',
 
-	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
-		logger.Verbose(app.bot.uploadCommand("shared", (command: SlashCommandBuilder) => command
+	(module: Module) => {
+		module.logger.Verbose(module.app.bot.uploadCommand("shared", (command: SlashCommandBuilder) => command
 			.setName("s-info")
 		))
-		return [
+		module.addEvent(
 			new DiscordEvent("guildCreate", async (guild: Guild) => {
-				app.bot.pushCommands(guild.id)
+				module.app.bot.pushCommands(guild.id)
 				let channel = (await guild.channels.fetch()).filter((channel: NonThreadGuildBasedChannel | null) => (channel?.isTextBased() && channel.manageable)).first() as TextChannel | null | undefined
 				if ((await guild.members.fetchMe()).permissions.has(PermissionFlagsBits.Administrator)) {
 					await (await guild.fetchOwner()).send({ embeds: [ErrorEmbed("Ошибка разрешений! Добавьте бота с параметрами по умолчанию.")] })
@@ -31,11 +31,12 @@ export default new Module(
 				if (interaction.commandName != "s-info") return
 				try {
 					await interaction.deferReply({ ephemeral: true })
-					await interaction.editReply({embeds: [ErrorEmbed("Not Implemented.")]})
+					await interaction.editReply({ embeds: [ErrorEmbed("Not Implemented.")] })
 				} catch (err) {
 					interaction.replied ? await interaction.editReply({ embeds: [ErrorEmbed()] }) : await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
 				}
 			})
-		]
+		)
+		return module
 	}
 )

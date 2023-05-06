@@ -1,20 +1,21 @@
 import App from "../../../App";
 import AppBusModuleComponent from "../../../types/AppBus/ModuleComponent";
 import Logger from "../../../types/Logger";
-import Module from "../../../types/Module";
+import ModuleBuilder, { Module } from "../../../types/Module";
 import donate from "./donate";
 import manage from "./manage";
 import profile from "./profile";
 import promoManager from "./promo";
 
-export default new Module(
+export default new ModuleBuilder(
 	"payments",
-	(app: App, appBusModuleComponent: AppBusModuleComponent, logger: Logger) => {
-		return [
-			profile(app, logger), 
-			donate(app, logger),
-			...manage(app, logger),
-			...promoManager(app, logger)
-		]
+	(module: Module) => {
+		module.addEvent(
+			profile(module.app, module.logger), 
+			donate(module.app, module.logger),
+			...manage(module.app, module.logger),
+			...promoManager(module.app, module.logger)
+		)
+		return module
 	}
 )

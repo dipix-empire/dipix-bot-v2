@@ -32,7 +32,12 @@ export default interface Config {
 	},
 	modules: {
 		chat: {
-			minecraftSendPattern: (user: string, message: string) => string
+			minecraftSendPattern: (user: string, message: string) => string,
+			discord: {
+				serverOnline: (online: boolean) => string,
+				playerJoined: (player: string, online: boolean) => string,
+				playerMessage: (player: string, message: string) => string
+			}
 		},
 		profiles: {
 			skinDirectory: string

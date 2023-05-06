@@ -18,7 +18,7 @@ export const ButtonActionRowAdmin = (reqID: string, disabled = false, success = 
 				.setLabel('Проверить')
 				.setStyle(ButtonStyle.Secondary)
 				.setDisabled(disabled),
-			discuss ? new ButtonBuilder()
+			!discuss ? new ButtonBuilder()
 				.setCustomId(`join:admin:discuss:${reqID}`)
 				.setLabel("Начать обсуждение")
 				.setStyle(ButtonStyle.Secondary)

@@ -1,4 +1,9 @@
 // import { ChatMessageServiceService, IChatMessageServiceServer, IStatsServer, StatsService } from "../src/generated/proto/dipix-bot_grpc_pb";
+/**
+ * ! DEPRECATED
+ * ! REPLACED WITH REST API ON BOT
+ */
+
 import { ClientDuplexStream, Server, ServerCredentials, ServerDuplexStream, ServerUnaryCall, ServerWritableStream, credentials, sendUnaryData } from "@grpc/grpc-js"
 import { ChatMessage, ConsoleCommand, ConsoleLog, Empty, PlayerList } from "../src/generated/proto/dipix-bot_pb";
 import { EventEmitter } from "events";

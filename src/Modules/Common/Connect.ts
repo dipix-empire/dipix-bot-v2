@@ -1,42 +1,42 @@
 import { APIEmbedField, ActionRowBuilder, ButtonBuilder, ButtonStyle, Interaction, InteractionReplyOptions, MessageResolvable, SlashCommandBuilder, SlashCommandStringOption, User } from "discord.js";
 import App from "../../App";
 import AppBusModuleComponent from "../../types/AppBus/ModuleComponent";
-import Module from "../../types/Module";
+import ModuleBuilder, { Module } from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import Logger from "../../types/Logger";
 import { ErrorEmbed, InfoEmbed } from "../../Data/Embeds";
 
-export default new Module("connect",
-	(app: App, appBusModule: AppBusModuleComponent, logger: Logger) => {
+export default new ModuleBuilder("connect",
+	(module: Module) => {
 		async function getReply(user: User,): Promise<InteractionReplyOptions> {
-			let userClient = await app.prisma.user.findFirst({ where: { discord: user.id }, select: { client: true } })
+			let userClient = await module.app.prisma.user.findFirst({ where: { discord: user.id }, select: { client: true } })
 			if (!userClient) return { embeds: [ErrorEmbed("Пользователь не найден!")], ephemeral: true }
 			let javaFields: APIEmbedField[] = [{
 				name: "Java",
 				value: "━━━━━━━━━━━━━━━━━━━━━━━━━━"
-			},{
+			}, {
 				name: "IP",
-				value: app.config.modules.connect.java.ip,
+				value: module.app.config.modules.connect.java.ip,
 				inline: true
 			}, {
 				name: "Версия",
-				value: app.config.modules.connect.java.version,
+				value: module.app.config.modules.connect.java.version,
 				inline: true
 			}]
 			let bedrockFields: APIEmbedField[] = [{
 				name: "Bedrock",
 				value: "━━━━━━━━━━━━━━━━━━━━━━━━━━"
-			},{
+			}, {
 				name: "IP",
-				value: app.config.modules.connect.bedrock.ip,
+				value: module.app.config.modules.connect.bedrock.ip,
 				inline: true
 			}, {
 				name: "Порт",
-				value: app.config.modules.connect.bedrock.port,
+				value: module.app.config.modules.connect.bedrock.port,
 				inline: true
 			}, {
 				name: "Версия",
-				value: app.config.modules.connect.bedrock.version,
+				value: module.app.config.modules.connect.bedrock.version,
 				inline: true
 			}]
 			let client = userClient?.client || "both"
@@ -49,25 +49,25 @@ export default new Module("connect",
 		let commandBuilder = (command: SlashCommandBuilder) => command
 			.setName("connect")
 			.setDescription("Получить IP для подключения.")
-		logger.Verbose(app.bot.uploadCommand("main", commandBuilder))
-		logger.Verbose(app.bot.uploadCommand("shared", commandBuilder))
-		return [
-			new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
-				if (
-					(!interaction.isCommand() || interaction.commandName != "connect") &&
-					(!interaction.isButton() || interaction.customId != "common:connect")
-				) return
-				try {
-					await interaction.reply(await getReply(interaction.user))
-				} catch (err) {
-					logger.Error(err)
-					interaction.isRepliable() &&
-						interaction.replied ?
-						await interaction.editReply({ embeds: [ErrorEmbed()] }) :
-						await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
-				}
-			})
-		]
+		module.logger.Verbose(module.app.bot.uploadSlashCommand("main", commandBuilder))
+		module.logger.Verbose(module.app.bot.uploadSlashCommand("shared", commandBuilder))
+
+		module.addEvent(new DiscordEvent("interactionCreate", async (interaction: Interaction) => {
+			if (
+				(!interaction.isCommand() || interaction.commandName != "connect") &&
+				(!interaction.isButton() || interaction.customId != "common:connect")
+			) return
+			try {
+				await interaction.reply(await getReply(interaction.user))
+			} catch (err) {
+				module.logger.Error(err)
+				interaction.isRepliable() &&
+					interaction.replied ?
+					await interaction.editReply({ embeds: [ErrorEmbed()] }) :
+					await interaction.reply({ embeds: [ErrorEmbed()], ephemeral: true })
+			}
+		}))
+		return module
 	}
 )
 
