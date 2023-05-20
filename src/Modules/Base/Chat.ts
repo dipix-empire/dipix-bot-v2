@@ -69,7 +69,7 @@ export default new ModuleBuilder(
 					await channel.send({
 						embeds: [
 							new EmbedBuilder()
-								.setDescription(module.app.config.modules.chat.discord.serverOnline(status.online) || status.online ? `🟢 **Сервер запущен**` : `🔴 **Сервер выключен**`)
+								.setDescription(module.app.config.modules.chat.discord.serverOnline(status.online))
 						]
 					})
 				} catch (err) {
