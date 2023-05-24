@@ -16,21 +16,21 @@ export default (app: App, logger: Logger, userBuffer: { [key: string]: Interacti
       where: { id: requestId }
     })
     if (request == null) throw new Error("Undefined request id")
-    let TextInput = JSON.parse(request.fields) as string[]
-    let Text_1 = TextInput[2] || 'Не указан', Text_2 = TextInput[4] || 'Не указан'
+    let textInput = JSON.parse(request.fields) as string[]
+    let sex = textInput[2] || 'Не указан', promo = textInput[4] || 'Не указан'
     if (!userBuffer[`modal:${request.id}`]) return interaction.reply({ embeds: [ErrorEmbed("Ошибка буфера данных, перепишите заявку заново.")], ephemeral: true })
     logger.Debug("Interaction ID", interaction.customId)
 
-    const EmbedTitle = ['Ваша заявка на присоединение', `Заявка: ${interaction.user.username}`]
+    const embedTitle = ['Ваша заявка на присоединение', `Заявка: ${interaction.user.username}`]
 
     if (interaction.customId.startsWith(`join:user:send:`)) {
       await interaction.reply({ embeds: [SuccesfulEmbed("Заявка отправлена!")], ephemeral: true })
-      await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, true, true)] });
+      await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(sex, promo, textInput, embedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, true, true)] });
       let msg = await (
         (await app.bot.channels.fetch(app.config.modules.join.channels.panel)) as TextChannel)
         .send({ 
           content: `<${app.config.bot.roles.administration}>, поступила новая заявка.`, 
-          embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[1], interaction)], 
+          embeds: [Embed(sex, promo, textInput, embedTitle[1], interaction)], 
           components: [ButtonActionRowAdmin(request.id)] 
         })
       await app.prisma.request.update({ where: { id: request.id }, data: { message: msg.id } })
@@ -46,7 +46,7 @@ export default (app: App, logger: Logger, userBuffer: { [key: string]: Interacti
         ],
         ephemeral: true
       })
-      await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(Text_1, Text_2, TextInput, EmbedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, false, false)] })
+      await (userBuffer[`modal:${request.id}`] as ModalSubmitInteraction).editReply({ embeds: [Embed(sex, promo, textInput, embedTitle[0], interaction)], components: [ButtonActionRowUser(request.id, false, false)] })
     }
     else if (interaction.customId.startsWith(`join:user:biography:`)) {
       await interaction.showModal(ModalActionRowBiography(request.id));

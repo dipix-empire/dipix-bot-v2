@@ -32,7 +32,7 @@ export default new ModuleBuilder("freeaccess", async (module: Module) => {
         if (list.length > 2) {
           interaction.reply({ content: 'иди нахуй', ephemeral: true })
         } else {
-          await module.app.prisma.freeaccess.create({ data: { user: userId, admin: adminId }})
+          await module.app.prisma.freeaccess.create({ data: { user: userId, admin: adminId } })
           interaction.reply({ content: 'доступ выдан', ephemeral: true })
           await (await discordUser.createDM()).send({ content: 'доступ выдан' })
         }
