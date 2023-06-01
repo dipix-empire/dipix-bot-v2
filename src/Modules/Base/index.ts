@@ -5,16 +5,14 @@ import Join from "./Join";
 import Payments from "./Payments";
 import Names from "./Names";
 import Subscriptions from "./Subscriptions";
-import Freeaccess from "./Freeaccess";
 
 //TODO: MIGRATE PROFILES,
 export default [
-  Chat,
-  Console,
-  Join,
-  Conversation,
-  Payments,
-  Names,
-  Subscriptions,
-  Freeaccess
+	Chat,
+	Console,
+	Join,
+	Conversation,
+	Payments,
+	Names,
+	Subscriptions
 ]
