@@ -19,7 +19,7 @@ export default new ModuleBuilder(
 					}
 					if (!msg.content) return module.logger.Debug(`Ignoring empty message content `)
 					let data = msg.content.split("\n")
-					let res = module.app.minecraft.sendChatMessage(user.nickname, data[0])
+					let res = await module.app.minecraft.sendChatMessage(user.nickname, data[0])
 					data.shift()
 					if (res) {
 						await msg.react("✅")
