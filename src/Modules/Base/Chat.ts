@@ -19,7 +19,7 @@ export default new ModuleBuilder(
 					}
 					if (!msg.content) return module.logger.Debug(`Ignoring empty message content `)
 					let data = msg.content.split("\n")
-					let res = module.app.minecraft.sendChatMessage(user.nickname, data[0])
+					let res = await module.app.minecraft.sendChatMessage(user.nickname, data[0])
 					data.shift()
 					if (res) {
 						await msg.react("✅")
@@ -69,7 +69,7 @@ export default new ModuleBuilder(
 					await channel.send({
 						embeds: [
 							new EmbedBuilder()
-								.setDescription(module.app.config.modules.chat.discord.serverOnline(status.online) || status.online ? `🟢 **Сервер запущен**` : `🔴 **Сервер выключен**`)
+								.setDescription(module.app.config.modules.chat.discord.serverOnline(status.online))
 						]
 					})
 				} catch (err) {
