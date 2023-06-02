@@ -141,9 +141,3 @@ model KeepUpThread {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   discord String @unique
 }
-
-model Freeaccess {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  user  String @unique
-  admin String @unique
-}
