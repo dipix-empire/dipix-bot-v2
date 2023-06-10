@@ -26,6 +26,11 @@ export default interface Config {
 	minecraft: {
 		uri: string,
 		port: number,
+		rcon: {
+			host: string,
+			port: number,
+			timeout: number
+		}
 	}
 	rest: {
 		port: number

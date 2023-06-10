@@ -3,6 +3,7 @@ import Logger from "../types/Logger";
 import express, { Request, Response } from "express"
 import { Server } from "http";
 import Rcon, { State } from "rcon-ts"
+import { MinecraftRCONProps } from "../types/TypeAlias";
 
 export default class Minecraft extends EventEmitter {
 
@@ -11,16 +12,15 @@ export default class Minecraft extends EventEmitter {
 	private rcon: Rcon
 	constructor(
 		private readonly port: number,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly format: (s: string, m: string) => string,
+		rconProps: MinecraftRCONProps
 	) {
 		super()
 		this.app = express()
 		this.app.use(express.json())
 		this.rcon = new Rcon({
-			host: "localhost",
-			port: 25575,
-			password: "password",
-			timeout: 5000
+			...rconProps
 		})
 	}
 	//#region Routes Impl
@@ -28,7 +28,7 @@ export default class Minecraft extends EventEmitter {
 		this.logger.Debug("/status req.query: ", req.query)
 		let online = req.query.online == "true"
 		if (online) {
-			this.isConnectedToRCON() && this.connectRcon()
+			this.isConnectedToRCON() || this.connectRcon()
 		}
 		this.emit("status", { online })
 		res.status(200).send("")
@@ -48,6 +48,7 @@ export default class Minecraft extends EventEmitter {
 	}
 	//#endregion
 
+	//#region RCON methods implement
 	public isConnectedToRCON() {
 		switch(this.rcon.state) {
 			case State.Refused:
@@ -63,8 +64,19 @@ export default class Minecraft extends EventEmitter {
 		return await this.rcon.send(data)
 	}
 	public async sendChatMessage(sender: string, msg: string) {
-		return await this.sendCommand(`/tellraw [{"text":"[DS] ${sender}: ${msg}"}]`)
+		return await this.sendCommand(`/tellraw @a ${this.format(sender, msg)}`)
 	}
+	private async connectRcon() {
+		try {
+			this.logger.Log("Connecting to RCON server...")
+			await this.rcon.connect()
+
+		} catch(err) {
+			this.logger.Log("RCON connection attempt.")
+			this.logger.VerboseError(err)
+		}
+	}
+	//#endregion
 
 	public start() {
 
@@ -78,17 +90,7 @@ export default class Minecraft extends EventEmitter {
 
 		this.connectRcon()
 	}
-	private async connectRcon() {
-		try {
-			this.logger.Log("Connecting to RCON server...")
-			await this.rcon.connect()
-
-		} catch(err) {
-			this.logger.Log("RCON connection attempt.")
-			this.logger.VerboseError(err)
-		}
-	}
-
+	
 	public async stop() {
 		return new Promise<void>((res, rej) => {
 			if (!this.server) res()
