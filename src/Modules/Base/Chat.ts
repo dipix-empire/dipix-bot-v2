@@ -4,6 +4,7 @@ import ModuleBuilder, { Module } from "../../types/Module";
 import DiscordEvent from "../../types/ModuleEvent/DiscordEvent";
 import MinecraftEvent from "../../types/ModuleEvent/MinecraftEvent";
 import { ErrorEmbed } from "../../Data/Embeds";
+import { Sleep } from "../../types/Util";
 
 export default new ModuleBuilder(
 	"chat", (module: Module) => {
@@ -19,15 +20,16 @@ export default new ModuleBuilder(
 					}
 					if (!msg.content) return module.logger.Debug(`Ignoring empty message content `)
 					let data = msg.content.split("\n")
-					let res = await module.app.minecraft.sendChatMessage(user.nickname, data[0])
-					data.shift()
-					if (res) {
+					try {
+						await module.app.minecraft.sendChatMessage(user.nickname, data[0])
+						data.shift()
 						await msg.react("✅")
+						// if (data.length == 0) return
 						for (let i = 0; i < data.length; i++) {
+							await Sleep(200)
 							module.app.minecraft.sendChatMessage(user.nickname, data[i])
 						}
-					}
-					else {
+					} catch(err) {
 						await msg.react('❌')
 						let reply = await msg.reply({ embeds: [ErrorEmbed("No server connection available.")] })
 						setTimeout(async (msg: Message, logger: Logger) => {

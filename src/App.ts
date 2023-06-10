@@ -72,7 +72,17 @@ export default class App {
 			new Logger("Bot", config.logLevel, "client"),
 			config.bot.guildId
 		)
-		this.minecraft = new Minecraft(config.minecraft.port, new Logger("Minecraft", config.logLevel, "client"))
+		this.minecraft = new Minecraft(
+			config.minecraft.port,
+			new Logger("Minecraft", config.logLevel, "client"),
+			config.modules.chat.minecraftSendPattern,
+			{
+				host: config.minecraft.rcon.host,
+				port: config.minecraft.rcon.port,
+				timeout: config.minecraft.rcon.timeout,
+				password: secrets.rcon_password
+			}
+		)
 		this.rest = new REST(config.rest.port, new Logger("Rest", config.logLevel, "client"))
 		this.prisma = new PrismaClient()
 		this.appBusMain = new AppBusMain(this.logger)
