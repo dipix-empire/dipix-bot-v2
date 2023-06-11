@@ -16,6 +16,7 @@ model User {
   request        Request        @relation(fields: [requestId], references: [id])
   requestId      String         @unique @db.ObjectId
   client         Client?        @default(both)
+  localy         String         @unique
   //social links
   discord        String         @unique
   telegram       String?
@@ -95,6 +96,7 @@ model Request {
   discord   String
   biography String? @default("")
   user      User[]
+  localy    String  @unique
   locked    Boolean
 }
 

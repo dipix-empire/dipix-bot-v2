@@ -48,7 +48,7 @@ export default (app: App, logger: Logger) => new DiscordEvent("interactionCreate
       await (await discordUser.createDM()).send({
         embeds: [new EmbedBuilder()
           .setTitle("Ваша заявка принята!")
-          .setDescription("Теперь вы можете играть на сервере!\nДля получения IP нажмите кнопку ниже или воспользуйтесь `/connect` на дискорд-сервере.\n**Не показывайте IP никому, пожалуйста**")
+          .setDescription("Теперь вы можете играть на сервере!\nДля получения IP нажмите кнопку ниже или воспользуйтесь `/connect` на дискорд-сервере.")
           .setColor(Colors.Green)
           .setFooter(footer)
           .setTimestamp(Date.now())

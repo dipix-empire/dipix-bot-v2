@@ -6,6 +6,7 @@ import Payments from "./Payments";
 import Names from "./Names";
 import Subscriptions from "./Subscriptions";
 import Freeaccess from "./Freeaccess";
+import Poll from "./Poll";
 
 //TODO: MIGRATE PROFILES,
 export default [
@@ -16,5 +17,6 @@ export default [
   Payments,
   Names,
   Subscriptions,
-  Freeaccess
+  Freeaccess,
+  Poll
 ]
