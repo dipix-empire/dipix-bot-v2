@@ -17,6 +17,5 @@ export default [
   Payments,
   Names,
   Subscriptions,
-  Freeaccess,
-  Poll
+  Freeaccess
 ]

@@ -14,8 +14,8 @@ export default (app: App, logger: Logger, userBuffer: {[key: string]: Interactio
     const textInput = postfixes.map(x => {
       return interaction.fields.getTextInputValue(`join:question${x}`)
     }).filter(x => typeof x === `string`)
-    if (!textInput[1].toLowerCase().match(/^[1-9]\d+$/g)) return interaction.reply({ embeds: [ErrorEmbed(`Неверно указан возраст. Заполните заявку еще раз`)], ephemeral: true})
-    if (!textInput[3].toLowerCase().match(/^(java|bedrock|оба)$/g)) return interaction.reply({ embeds: [ErrorEmbed(`Неверно указан клиент. Заполните заявку еще раз`)], ephemeral: true})
+    if (!textInput[1].toLowerCase().match(/^[1-9]\d+$/g)) { return interaction.reply({embeds: [ErrorEmbed(`Неверно указан возраст. Заполните заявку еще раз`)], ephemeral: true}) }
+    if (!textInput[3].toLowerCase().match(/^(java|bedrock|оба)$/g)) { return interaction.reply({embeds: [ErrorEmbed(`Неверно указан клиент. Заполните заявку еще раз`)], ephemeral: true}) }
     let sex = textInput[2] || 'Не указан', promo = textInput[4] || 'Не указан'
     let request = await app.prisma.request.create({
       data: {
