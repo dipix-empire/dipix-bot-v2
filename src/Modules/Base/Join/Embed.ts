@@ -4,6 +4,7 @@ import { Interaction, EmbedBuilder } from "discord.js"
 export default (Sex: string, Promo: string, TextInput: string[], EmbedTitle: string, interaction: Interaction) => new EmbedBuilder()
 	.setTitle(EmbedTitle)
 	.setURL(`https://discordapp.com/users/${interaction.user.id}/`)
+	.setDescription("**Прочтите правила сервера (кнопка ниже), а затем отправьте заявку**")
 	.addFields(
 		{ name: 'Ник в Майнкрафт', value: `${TextInput[0]}`, inline: true },
 		{ name: 'Пол', value: `${Sex}`, inline: true },
