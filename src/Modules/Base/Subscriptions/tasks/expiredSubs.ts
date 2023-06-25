@@ -1,10 +1,10 @@
 import { Axios } from "axios"
-import App from "../../../App"
-import Task from "../../../types/Task"
-import { TaskHandlerArgs } from "../../../types/TypeAlias"
-import { getCost } from "./plans"
-import updateSubscribtion from "./updateSubscribtion"
-import { getDate } from "./util"
+import App from "../../../../App"
+import Task from "../../../../types/Task"
+import { TaskHandlerArgs } from "../../../../types/TypeAlias"
+import { getCost } from "../plans"
+import updateSubscribtion from "../updateSubscribtion"
+import { getDate } from "../util"
 import QueryString from "qs";
 
 export default (app: App, paymentBot: Axios) => {
