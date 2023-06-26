@@ -2,8 +2,8 @@ import { Plan } from "@prisma/client"
 import { InfoEmbed } from "../../../../Data/Embeds"
 import Task from "../../../../types/Task"
 import { TaskHandlerArgs } from "../../../../types/TypeAlias"
-import { getPlanDetail } from "../plans"
-import { getDate } from "../util"
+import { getPlanDetail } from "../util/plans"
+import { getDate } from "../util/util"
 import { Module } from "../../../../types/Module"
 
 export default (module: Module) => {
