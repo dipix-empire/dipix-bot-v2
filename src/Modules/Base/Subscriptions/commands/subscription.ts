@@ -37,22 +37,7 @@ export default (module: Module) => {
 			await (interaction.replied ? interaction.editReply({ embeds: [ErrorEmbed()] }) : interaction.reply({ embeds: [ErrorEmbed()] }))
 		}
 	}))
-	module.app.rest.inner("/subscription/update", async (data) => {
-		let id = data?.id
-		if (!id) {
-			module.logger.Verbose(`Update requested but no id was provided.`)
-			return { status: 400 }
-		}
-		let user = await module.app.prisma.user.findUnique({
-			where: { id }
-		})
-		if (!user) {
-			module.logger.Verbose(`Update requested but no user matched id.`)
-			return { status: 404 }
-		}
-		module.logger.Log(`Update for user ${id}/${(await module.app.bot.users.fetch(user.discord)).tag} requested.`)
-		return { status: 501 }
-	})
+	
 	function getNameByIndex(id: number) {
 		return !id ? "Текущий период:" : `${id} период${id > 1 ? id > 4 ? "ов" : "a" : ""} назад:`
 	}
