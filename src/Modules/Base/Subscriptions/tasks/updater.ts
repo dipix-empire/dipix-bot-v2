@@ -1,10 +1,10 @@
 import { Module } from "../../../../types/Module";
 import Task from "../../../../types/Task";
 import { TaskHandlerArgs } from "../../../../types/TypeAlias";
-import { Sub, getDate } from "../util";
-import { getPlanDetail } from "../plans";
+import { Sub, getDate } from "../util/util";
+import { getPlanDetail } from "../util/plans";
 import { ErrorEmbed, SuccesfulEmbed } from "../../../../Data/Embeds";
-import Update from "../update";
+import Update from "../util/update";
 
 export default (module: Module) => {
 	return new Task("Updater", async ({ fireDate, logger }: TaskHandlerArgs) => {

@@ -1,5 +1,5 @@
-import { ErrorEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
-import { Module } from "../../../types/Module";
+import { ErrorEmbed, SuccesfulEmbed } from "../../../../Data/Embeds";
+import { Module } from "../../../../types/Module";
 import { getPlanDetail } from "./plans";
 import { Sub } from "./util";
 

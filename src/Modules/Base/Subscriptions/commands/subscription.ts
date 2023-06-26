@@ -2,7 +2,7 @@ import { SlashCommandBuilder, Interaction } from "discord.js";
 import { ErrorEmbed, InfoEmbed } from "../../../../Data/Embeds";
 import { Module } from "../../../../types/Module";
 import DiscordEvent from "../../../../types/ModuleEvent/DiscordEvent";
-import { getPlanDetail } from "../plans";
+import { getPlanDetail } from "../util/plans";
 
 export default (module: Module) => {
 	module.logger.Verbose(module.app.bot.uploadSlashCommand("main", (slashCommand: SlashCommandBuilder) => slashCommand
