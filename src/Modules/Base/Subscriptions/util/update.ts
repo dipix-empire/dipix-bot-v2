@@ -1,11 +1,9 @@
-import { ErrorEmbed, SuccesfulEmbed } from "../../../../Data/Embeds";
 import { Module } from "../../../../types/Module";
 import { getPlanDetail } from "./plans";
 import { Sub } from "./util";
 
-export default async function Update(module: Module, s: Sub) {
+export default async function Update(module: Module, s: Sub): Promise<[UpdateResult, number | undefined]> {
 	try {
-		const discordUser = await module.app.bot.users.fetch(s.discord);
 		/**
 		 * *	Outdate current sub
 		 * *	Make sure user sub procceded
@@ -18,12 +16,7 @@ export default async function Update(module: Module, s: Sub) {
 			data: { status: "expired" }
 		})
 		if (s.balance < getPlanDetail(s.nextPlan).cost)
-			return await discordUser.send({
-				embeds: [ErrorEmbed(
-					"На балансе недостаточно средств для обновления подписки!",
-					"Ваша подписка истекла!"
-				)]
-			})
+			return [UpdateResult.notEnoughBalance, s.balance]
 		let newSub = await module.app.prisma.subscription.create({
 			data: {
 				userId: s.uid,
@@ -43,20 +36,15 @@ export default async function Update(module: Module, s: Sub) {
 				}
 			}
 		})
-		await discordUser.send({
-			embeds: [
-				SuccesfulEmbed(
-					`С баланса списано $${getPlanDetail(newSub.plan).cost}, 
-					текущий счёт: ${updatedUser.balance}
-					${s.plan != newSub.plan ?
-						`, план изменён с \`${getPlanDetail(s.plan).name}\` на \`${getPlanDetail(newSub.plan).name}\`` :
-						''
-					}`,
-					"Подписка обновлена!"
-				)
-			]
-		})
+		return [UpdateResult.successful, updatedUser.balance]
 	} catch (err) {
 		module.logger.Error(err, `Error during ${s.uid} / <@${s.discord}> subscription update`)
+		return [UpdateResult.internalError, undefined]
 	}
+}
+
+export enum UpdateResult {
+	"successful" = 0,
+	"internalError" = 1,
+	"notEnoughBalance" = 2,
 }

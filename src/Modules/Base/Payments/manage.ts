@@ -4,7 +4,7 @@ import Logger from "../../../types/Logger";
 import ModuleEvent from "../../../types/ModuleEvent";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 import { ErrorEmbed, InfoEmbed, SuccesfulEmbed } from "../../../Data/Embeds";
-import { onChangeBalance } from "../Subscriptions/updateSubscribtion";
+// import { onChangeBalance } from "../Subscriptions/updateSubscribtion";
 
 export default ((app: App, logger: Logger) => {
 	app.bot.uploadCommand("main", (slashCommand: SlashCommandBuilder) => slashCommand
@@ -52,11 +52,11 @@ export default ((app: App, logger: Logger) => {
 				let disUser = await app.bot.users.fetch(newUser.discord)
 				logger.Log(`${interaction.user.tag} изменил баланс ${disUser.tag} на $${value}. Текущий баланс пользователя: ${newUser.balance}`)
 				await interaction.editReply({ embeds: [SuccesfulEmbed(`Баланс обновлён, новый баланс <@${newUser.discord}>: $${newUser.balance}`)] });
-				await onChangeBalance(app, newUser.id, {
-					...newUser,
-					proceeded: true,
-					start: new Date(),
-				}, logger)
+				// await onChangeBalance(app, newUser.id, {
+				// 	...newUser,
+				// 	proceeded: true,
+				// 	start: new Date(),
+				// }, logger)
 				if (!disUser) throw new Error("Undefined user.")
 				let positive = value > 0
 				await (await disUser.createDM()).send({

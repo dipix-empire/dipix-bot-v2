@@ -4,7 +4,7 @@ import { TaskHandlerArgs } from "../../../../types/TypeAlias";
 import { Sub, getDate } from "../util/util";
 import { getPlanDetail } from "../util/plans";
 import { ErrorEmbed, SuccesfulEmbed } from "../../../../Data/Embeds";
-import Update from "../util/update";
+import Update, { UpdateResult } from "../util/update";
 
 export default (module: Module) => {
 	return new Task("Updater", async ({ fireDate, logger }: TaskHandlerArgs) => {
@@ -42,8 +42,35 @@ export default (module: Module) => {
 			discord: s.user.discord,
 			balance: s.user.balance
 		}))
-		data.map(async (s: Sub) => {
-			await Update(module, s)
-		})
+		for (let i = 0; i < data.length; i++) {
+			let s = data[i]
+			let [res, balance] = await Update(module, s)
+			const discordUser = await module.app.bot.users.fetch(s.discord);
+			switch (res) {
+				case UpdateResult.successful:
+					return await discordUser.send({
+						embeds: [
+							SuccesfulEmbed(
+								`С баланса списано $${getPlanDetail(s.nextPlan).cost}, 
+								текущий счёт: ${balance}
+								${s.plan != s.nextPlan ?
+									`, план изменён с \`${getPlanDetail(s.plan).name}\` на \`${getPlanDetail(s.nextPlan).name}\`` :
+									''
+								}`,
+								"Подписка обновлена!"
+							)
+						]
+					})
+				case UpdateResult.internalError:
+					return
+				case UpdateResult.notEnoughBalance:
+					return await discordUser.send({
+						embeds: [ErrorEmbed(
+							"На балансе недостаточно средств для обновления подписки!",
+							"Ваша подписка истекла!"
+						)]
+					})
+			}
+		}
 	})
 }

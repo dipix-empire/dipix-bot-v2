@@ -24,11 +24,11 @@ export default class Minecraft extends EventEmitter {
 		})
 	}
 	//#region Routes Impl
-	private readonly status = (req: Request, res: Response) => {
+	private readonly status = async (req: Request, res: Response) => {
 		this.logger.Debug("/status req.query: ", req.query)
 		let online = req.query.online == "true"
 		if (online) {
-			this.isConnectedToRCON() || this.connectRcon()
+			this.isConnectedToRCON() || await this.connectRcon()
 		}
 		this.emit("status", { online })
 		res.status(200).send("")
@@ -70,10 +70,9 @@ export default class Minecraft extends EventEmitter {
 		try {
 			this.logger.Log("Connecting to RCON server...")
 			await this.rcon.connect()
-
+			this.logger.Log("Connection to RCON established.")
 		} catch(err) {
-			this.logger.Log("RCON connection attempt.")
-			this.logger.VerboseError(err)
+			this.logger.Error(err, "RCON connection attempt failed with error")
 		}
 	}
 	//#endregion
