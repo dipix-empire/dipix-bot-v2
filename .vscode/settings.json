@@ -15,5 +15,6 @@
 	},
 	"peacock.color": "#174631",
 	"peacock.affectActivityBar": true,
-	"peacock.affectStatusBar": false
+	"peacock.affectStatusBar": false,
+	"editor.insertSpaces": false
 }

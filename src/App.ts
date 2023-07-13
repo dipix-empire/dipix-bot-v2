@@ -11,6 +11,7 @@ import { PrismaClient } from "@prisma/client"
 import Logger from "./types/Logger"
 import REST from "./Clients/Rest"
 import Minecraft from "./Clients/Minecraft"
+import Registry from "./Clients/Registry"
 
 export default class App {
 	public readonly bot: Discord
@@ -21,8 +22,11 @@ export default class App {
 	private readonly logger: Logger
 	private appBusMain: AppBusMain
 	private readonly modules: ModuleBuilder[]
+	private readonly registry: Registry
 
 	public async start() {
+		await this.prisma.$connect()
+		await this.registry.start()
 		this.modules.forEach(async m => {
 			let eCount = 0
 			let logger = new Logger(m.name, this.config.logLevel, "module");
@@ -47,7 +51,6 @@ export default class App {
 
 		})
 		if (this.modules.length == 0) this.logger.Warn("No modules were provided. Check index.ts or config.ts")
-		await this.prisma.$connect()
 		this.bot.start(this)
 		this.rest.start()
 		this.minecraft.start()
@@ -85,6 +88,7 @@ export default class App {
 		)
 		this.rest = new REST(config.rest.port, new Logger("Rest", config.logLevel, "client"))
 		this.prisma = new PrismaClient()
+		this.registry = new Registry(this)
 		this.appBusMain = new AppBusMain(this.logger)
 		this.config = config
 		this.modules = modules
