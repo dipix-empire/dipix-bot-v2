@@ -3,10 +3,10 @@ import App from "../../../App";
 import Logger from "../../../types/Logger";
 import DiscordEvent from "../../../types/ModuleEvent/DiscordEvent";
 import { ErrorEmbed, InfoEmbed } from "../../../Data/Embeds";
-import { getName } from "../Subscriptions/plans"
+import { getName } from "../Subscriptions/util/plans"
 
 export default (app: App, logger: Logger) => {
-	logger.Verbose(app.bot.uploadCommand("main", (slashCommandBuilder: SlashCommandBuilder) =>
+	logger.Verbose(app.bot.uploadSlashCommand("main", (slashCommandBuilder: SlashCommandBuilder) =>
 		slashCommandBuilder
 			.setName("payments")
 			.setDescription("Управление подпиской")

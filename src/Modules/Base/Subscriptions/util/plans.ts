@@ -1,6 +1,6 @@
 import { Plan, Promo } from "@prisma/client"
-import { PlanDetail } from "../../../types/PlanDetail"
-import plans from "../../../../plans"
+import { PlanDetail } from "../../../../types/PlanDetail"
+import plans from "../../../../../plans"
 
 export function getPlanDetail(plan: Plan): PlanDetail {
 	let res = plans.filter(p => p.plan == plan)[0]

@@ -16,6 +16,7 @@ model User {
   request        Request        @relation(fields: [requestId], references: [id])
   requestId      String         @unique @db.ObjectId
   client         Client?        @default(both)
+  restricted     Boolean        @default(false)
   //social links
   discord        String         @unique
   telegram       String?
@@ -146,4 +147,10 @@ model Freeaccess {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   user  String @unique
   admin String @unique
+}
+
+model Registry {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  created       DateTime @default(now()) @map("_created")
+  COMMAND_QUEUE String[] @default([])
 }
