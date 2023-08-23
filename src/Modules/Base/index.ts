@@ -7,6 +7,7 @@ import Names from "./Names";
 import Subscriptions from "./Subscriptions";
 import Freeaccess from "./Freeaccess";
 import Poll from "./Poll";
+import Subscribe from "./Subscribe";
 
 //TODO: MIGRATE PROFILES,
 export default [
@@ -18,5 +19,6 @@ export default [
   Names,
   Subscriptions,
   Freeaccess,
-  Poll
+  Poll,
+  Subscribe
 ]
